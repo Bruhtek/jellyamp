@@ -1,25 +1,22 @@
+import 'package:jellyamp/classes/audio.dart';
+import 'package:jellyamp/api/api_service.dart';
+
+import 'package:jellyamp/env.dart';
+import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
-
-import 'package:jellyamp/classes/audio.dart';
-import 'package:jellyamp/env.dart';
-
-enum SortType {
-  albumArtist,
-  albumArtistDesc,
-  albumName,
-  albumNameDesc,
-}
-
-class Albums {
+class API implements APIService {
+  @override
   SortType sortType = SortType.albumArtist;
 
+  @override
+  //TODO: this is redundant, we should replace all use with detailedAlbumInfos
   List<AlbumInfo>? albumInfos;
 
-  /// Id to AlbumInfo
+  @override
   Map<String, AlbumInfo>? detailedAlbumInfos;
 
+  @override
   Future<List<AlbumInfo>> fetchAlbums() async {
     if (albumInfos == null) {
       List<AlbumInfo> albums = [];
@@ -54,6 +51,7 @@ class Albums {
     }
   }
 
+  @override
   Future<AlbumInfo> fetchAlbumSongs(String albumId) async {
     AlbumInfo? albumInfo = detailedAlbumInfos?[albumId];
 
@@ -135,6 +133,7 @@ class Albums {
     return albums;
   }
 
+  @override
   Future<List<AlbumInfo>> fetchAlbumsSorted() async {
     List<AlbumInfo> albums = await fetchAlbums();
 
@@ -157,9 +156,40 @@ class Albums {
     }
   }
 
+  @override
   //TODO: change this, it shouldn't just delete cached data, since we could have no connection
   Future<List<AlbumInfo>> forceFetchAlbums() async {
     albumInfos = null;
     return await fetchAlbums();
+  }
+
+  @override
+  Future<bool> correctServerUrl(String url) async {
+    if (_isUrlValid(url)) {
+      try {
+        final response = await http.get(Uri.parse('$url/System/Info/Public'));
+        if (response.statusCode == 200) {
+          if (response.body.contains('"ProductName":"Jellyfin Server"')) {
+            return true;
+          }
+
+          return false;
+        }
+
+        return false;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    return false;
+  }
+
+  bool _isUrlValid(String? url) {
+    if (url?.endsWith('/') ?? true) {
+      return false;
+    }
+    final uri = Uri.tryParse((url ?? '') + '/');
+    return uri != null && uri.hasAbsolutePath && uri.scheme.startsWith('http');
   }
 }

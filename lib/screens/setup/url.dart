@@ -51,51 +51,72 @@ class _UrlSetupState extends State<UrlSetup> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
-            const Text(
-              "Write your jellyfin instance url here",
-              style: TextStyle(fontSize: 36.0),
-            ),
-            TextField(
-              onChanged: checkUrl,
-              decoration: const InputDecoration(
-                hintText: "https://jellyfin.example.com",
-                labelText: "Your Jellyfin instance URL",
-              ),
-            ),
-            FutureBuilder<bool>(
-              future: correctServerUrl(jellyfinUrl),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  if (snapshot.data!) {
-                    return Column(
-                      children: [
-                        const Text(
-                          "Success!",
-                          style: TextStyle(color: Colors.green),
-                        ),
-                        ElevatedButton(
-                          onPressed: () =>
-                              Navigator.pushNamed(context, '/token'),
-                          child: const Text("Next"),
-                        ),
-                      ],
-                    );
+      body: Center(
+        child: Container(
+          height: MediaQuery.of(context).size.height * 0.65,
+          padding: const EdgeInsets.all(24.0),
+          child: FutureBuilder<bool>(
+            future: correctServerUrl(jellyfinUrl),
+            builder: (context, snapshot) {
+              Widget dynamicText = Container();
+              Widget dynamicButton = Container();
+
+              if (snapshot.hasData) {
+                final messageText;
+                final Function()? onPressed;
+
+                if (snapshot.data!) {
+                  messageText = "Your Jellyfin instance is valid";
+                  onPressed = () => Navigator.pushNamed(context, '/token');
+                } else {
+                  if (jellyfinUrl.isEmpty) {
+                    messageText = "";
                   } else {
-                    return const Text(
-                      "Invalid Url!",
-                      style: TextStyle(color: Colors.red),
-                    );
+                    messageText =
+                        "Your Jellyfin instance is not valid. Check if you entered the correct URL";
                   }
+
+                  onPressed = null;
                 }
 
-                return const CircularProgressIndicator();
-              },
-            ),
-          ],
+                dynamicText = Text(
+                  messageText,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: snapshot.data! ? Colors.green : Colors.red,
+                  ),
+                );
+                dynamicButton = ElevatedButton(
+                  onPressed: onPressed,
+                  child: const Text("Next"),
+                );
+              }
+
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Write your jellyfin instance url here",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 36.0),
+                  ),
+                  TextField(
+                    textAlign: TextAlign.center,
+                    onChanged: checkUrl,
+                    decoration: const InputDecoration(
+                      hintText: "https://jellyfin.example.com",
+                      label: Center(
+                        child: Text("Your Jellyfin instance URL"),
+                      ),
+                    ),
+                  ),
+                  dynamicText,
+                  dynamicButton,
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

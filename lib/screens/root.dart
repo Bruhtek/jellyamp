@@ -12,6 +12,10 @@ import 'package:jellyamp/preferences/essentialPrefs.dart';
 class Root extends StatefulWidget {
   const Root({Key? key}) : super(key: key);
 
+  final homeWidget = const Home();
+  final albumsWidget = const Albums();
+  final settingWidget = const Settings();
+
   @override
   _RootState createState() => _RootState();
 }
@@ -33,6 +37,31 @@ class _RootState extends State<Root> {
     });
   }
 
+  NavigationBar bottomNavigationBar() {
+    return NavigationBar(
+      selectedIndex: currentIndex,
+      labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+      onDestinationSelected: navigateToIndex,
+      destinations: const <NavigationDestination>[
+        NavigationDestination(
+          icon: Icon(Icons.home_outlined),
+          selectedIcon: Icon(Icons.home_rounded),
+          label: 'Home',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.album_outlined),
+          selectedIcon: Icon(Icons.album_rounded),
+          label: 'Albums',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.settings_outlined),
+          selectedIcon: Icon(Icons.settings_rounded),
+          label: 'Settings',
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     EssentialInfo eInfo = Provider.of<EssentialInfo>(context);
@@ -47,45 +76,6 @@ class _RootState extends State<Root> {
           eInfo.libraryId = snapshot.data!.libraryId;
 
           if (eInfo.allInfoFilled()) {
-            final NavigationBar _navigationBar = NavigationBar(
-              selectedIndex: currentIndex,
-              labelBehavior:
-                  NavigationDestinationLabelBehavior.onlyShowSelected,
-              onDestinationSelected: navigateToIndex,
-              destinations: const <NavigationDestination>[
-                NavigationDestination(
-                  icon: Icon(Icons.home_outlined),
-                  selectedIcon: Icon(Icons.home_rounded),
-                  label: 'Home',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.album_outlined),
-                  selectedIcon: Icon(Icons.album_rounded),
-                  label: 'Albums',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.settings_outlined),
-                  selectedIcon: Icon(Icons.settings_rounded),
-                  label: 'Settings',
-                ),
-              ],
-            );
-
-            final Widget _body;
-            switch (currentIndex) {
-              case 0:
-                _body = const Home();
-                break;
-              case 1:
-                _body = const Albums();
-                break;
-              case 2:
-                _body = const Settings();
-                break;
-              default:
-                _body = const Text("Error!");
-            }
-
             return Consumer<PanelController>(
               builder: (_, panelController, __) {
                 return Scaffold(
@@ -114,9 +104,16 @@ class _RootState extends State<Root> {
                         ),
                       ),
                     ),
-                    body: _body,
+                    body: IndexedStack(
+                      index: currentIndex,
+                      children: [
+                        widget.homeWidget,
+                        widget.albumsWidget,
+                        widget.settingWidget,
+                      ],
+                    ),
                   ),
-                  bottomNavigationBar: _navigationBar,
+                  bottomNavigationBar: bottomNavigationBar(),
                 );
               },
             );
