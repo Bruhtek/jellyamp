@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+//
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -8,7 +10,7 @@ import 'package:jellyamp/screens/root.dart';
 import 'package:jellyamp/api/albums.dart';
 import 'package:jellyamp/audio/just_audio_player.dart';
 import 'package:jellyamp/audio/audio_player_service.dart';
-import 'package:jellyamp/classes/prefs.dart';
+import 'package:jellyamp/api/jellyfin.dart';
 import 'package:jellyamp/env.dart';
 
 void main() {
@@ -34,9 +36,6 @@ class MainApp extends StatelessWidget {
         ),
         Provider<Albums>(
           create: (_) => Albums(),
-        ),
-        Provider<EssentialInfo>(
-          create: (_) => EssentialInfo('', '', '', ''),
         ),
       ],
       child: const MaterialApp(

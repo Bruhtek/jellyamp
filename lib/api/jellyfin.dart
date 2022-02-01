@@ -5,7 +5,7 @@ import 'package:jellyamp/env.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class API implements APIService {
+class JellyfinAPI implements APIService {
   @override
   SortType sortType = SortType.albumArtist;
 
