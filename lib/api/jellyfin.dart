@@ -1,11 +1,60 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:network_to_file_image/network_to_file_image.dart';
+import 'package:transparent_image/transparent_image.dart';
+
 import 'package:jellyamp/classes/audio.dart';
 import 'package:jellyamp/api/api_service.dart';
 
-import 'package:jellyamp/env.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class JellyfinAPI implements APIService {
+  //    ______ _   ___      __
+  //   |  ____| \ | \ \    / /
+  //   | |__  |  \| |\ \  / /
+  //   |  __| | . ` | \ \/ /
+  //   | |____| |\  |  \  /
+  //   |______|_| \_|   \/
+  //
+  //
+
+  late String _mediaBrowserToken;
+  late String _jellyfinUrl;
+  late String _userId;
+  late String _libraryId;
+
+  JellyfinAPI({
+    mediaBrowserToken,
+    jellyfinUrl,
+    userId,
+    libraryId,
+  }) {
+    _mediaBrowserToken = mediaBrowserToken ?? '';
+    _jellyfinUrl = jellyfinUrl ?? '';
+    _userId = userId ?? '';
+    _libraryId = libraryId ?? '';
+  }
+
+  bool get allInfoFilled =>
+      _mediaBrowserToken != '' &&
+      _jellyfinUrl != '' &&
+      _userId != '' &&
+      _libraryId != '';
+
+  String get _reqBaseUrl => _jellyfinUrl;
+  Map<String, String> get _reqHeaders =>
+      {'X-MediaBrowser-Token': _mediaBrowserToken};
+
+  //                      _ _
+  //       /\            | (_)
+  //      /  \  _   _  __| |_  ___
+  //     / /\ \| | | |/ _` | |/ _ \
+  //    / ____ \ |_| | (_| | | (_) |
+  //   /_/    \_\__,_|\__,_|_|\___/
+  //
+
   @override
   SortType sortType = SortType.albumArtist;
 
@@ -23,8 +72,8 @@ class JellyfinAPI implements APIService {
 
       var response = await http.get(
           Uri.parse(
-              '$reqBaseUrl/Users/$envUserId/Items?parentId=$envLibraryId&includeItemTypes=MusicAlbum&recursive=true'),
-          headers: reqHeaders);
+              '$_reqBaseUrl/Users/$_userId/Items?parentId=$_libraryId&includeItemTypes=MusicAlbum&recursive=true'),
+          headers: _reqHeaders);
 
       if (response.statusCode == 200) {
         final int albumCount = jsonDecode(response.body)['TotalRecordCount'];
@@ -63,11 +112,11 @@ class JellyfinAPI implements APIService {
 
     // a little on the paranoid side, since we already have the album info in 99% of the cases
     if (albumInfo == null) {
-      final albumInfoUrl = '$reqBaseUrl/Users/$envUserId/Items?ids=$albumId';
+      final albumInfoUrl = '$_reqBaseUrl/Users/$_userId/Items?ids=$albumId';
 
       final response = await http.get(
         Uri.parse(albumInfoUrl),
-        headers: reqHeaders,
+        headers: _reqHeaders,
       );
 
       if (response.statusCode == 200) {
@@ -80,11 +129,11 @@ class JellyfinAPI implements APIService {
 
     List<SongInfo> songs = [];
     final String songsInfoUrl =
-        '$reqBaseUrl/Users/$envUserId/Items?parentId=$albumId&includeItemTypes=Audio&recursive=true';
+        '$_reqBaseUrl/Users/$_userId/Items?parentId=$albumId&includeItemTypes=Audio&recursive=true';
 
     final response = await http.get(
       Uri.parse(songsInfoUrl),
-      headers: reqHeaders,
+      headers: _reqHeaders,
     );
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
@@ -191,5 +240,66 @@ class JellyfinAPI implements APIService {
     }
     final uri = Uri.tryParse((url ?? '') + '/');
     return uri != null && uri.hasAbsolutePath && uri.scheme.startsWith('http');
+  }
+
+  //    _____
+  //   |_   _|
+  //     | |  _ __ ___   __ _  __ _  ___  ___
+  //     | | | '_ ` _ \ / _` |/ _` |/ _ \/ __|
+  //    _| |_| | | | | | (_| | (_| |  __/\__ \
+  //   |_____|_| |_| |_|\__,_|\__, |\___||___/
+  //                           __/ |
+  //                          |___/
+
+  Future<File> fileImage(String filename) async {
+    Directory dir = await getApplicationDocumentsDirectory();
+    Directory subDir =
+        await Directory('${dir.path}/cachedImages').create(recursive: true);
+    String pathName = '${subDir.path}/$filename';
+    return File(pathName);
+  }
+
+  Future<ImageProvider> _imageWithCache({
+    required String imageFilename,
+    required String url,
+  }) async {
+    return NetworkToFileImage(
+      url: url,
+      file: await fileImage(imageFilename),
+      headers: _reqHeaders,
+    );
+  }
+
+  Widget imageIfTagExists({
+    required String? primaryImageTag,
+    required String itemId,
+    Widget? alternative,
+    BoxFit? fit,
+  }) {
+    if (primaryImageTag != null) {
+      final String url =
+          '$_reqBaseUrl/Items/$itemId/Images/Primary?tag=$primaryImageTag';
+
+      return FutureBuilder<ImageProvider>(
+        future: _imageWithCache(
+          imageFilename: primaryImageTag + ".img",
+          url: url,
+        ),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return FadeInImage(
+              fadeInDuration: const Duration(milliseconds: 200),
+              placeholder: MemoryImage(kTransparentImage),
+              image: snapshot.data!,
+              fit: fit ?? BoxFit.cover,
+            );
+          } else {
+            return alternative ?? Container();
+          }
+        },
+      );
+    } else {
+      return alternative ?? Container();
+    }
   }
 }

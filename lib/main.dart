@@ -7,7 +7,6 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 // jellyamp packages
 import 'package:jellyamp/screens/root.dart';
-import 'package:jellyamp/api/albums.dart';
 import 'package:jellyamp/audio/just_audio_player.dart';
 import 'package:jellyamp/audio/audio_player_service.dart';
 import 'package:jellyamp/api/jellyfin.dart';
@@ -34,8 +33,13 @@ class MainApp extends StatelessWidget {
           create: (_) => JustAudioPlayer(),
           dispose: (_, value) => (value as JustAudioPlayer).dispose(),
         ),
-        Provider<Albums>(
-          create: (_) => Albums(),
+        Provider<JellyfinAPI>(
+          create: (_) => JellyfinAPI(
+            mediaBrowserToken: envMediaBrowserToken,
+            jellyfinUrl: envJellyfinUrl,
+            userId: envUserId,
+            libraryId: envLibraryId,
+          ),
         ),
       ],
       child: const MaterialApp(

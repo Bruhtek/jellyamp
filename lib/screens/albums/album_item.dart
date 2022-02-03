@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:jellyamp/api/images.dart';
+import 'package:jellyamp/api/jellyfin.dart';
 import 'package:provider/provider.dart';
 
-import 'package:jellyamp/api/albums.dart';
 import 'package:jellyamp/classes/audio.dart';
 
 class AlbumItem extends StatefulWidget {
@@ -18,7 +17,7 @@ class _AlbumItemState extends State<AlbumItem> {
     final args = ModalRoute.of(context)!.settings.arguments as AlbumArguments;
     late Future<AlbumInfo> futureAlbumInfo;
 
-    futureAlbumInfo = Provider.of<Albums>(context, listen: false)
+    futureAlbumInfo = Provider.of<JellyfinAPI>(context, listen: false)
         .fetchAlbumSongs(args.albumId);
 
     return FutureBuilder<AlbumInfo>(
@@ -47,7 +46,8 @@ class _AlbumItemState extends State<AlbumItem> {
                         foregroundDecoration: const BoxDecoration(
                           color: Colors.black54,
                         ),
-                        child: imageIfTagExists(
+                        child:
+                            Provider.of<JellyfinAPI>(context).imageIfTagExists(
                           primaryImageTag: snapshot.data!.primaryImageTag,
                           itemId: snapshot.data!.id,
                           fit: BoxFit.cover,
@@ -66,7 +66,8 @@ class _AlbumItemState extends State<AlbumItem> {
                       aspectRatio: 1 / 1,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(24.0),
-                        child: imageIfTagExists(
+                        child:
+                            Provider.of<JellyfinAPI>(context).imageIfTagExists(
                           primaryImageTag: songInfo.primaryImageTag,
                           itemId: songInfo.id,
                         ),
