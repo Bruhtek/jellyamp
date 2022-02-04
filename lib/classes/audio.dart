@@ -67,3 +67,19 @@ class AlbumInfo {
 
   //TODO: Factory for the songs inc version
 }
+
+class AudioMetadata {
+  final String id;
+  final String albumId;
+  final String title;
+  final String? primaryImageTag;
+  final List<String>? artists;
+
+  AudioMetadata({
+    required this.id,
+    required this.albumId,
+    required this.title,
+    this.primaryImageTag,
+    this.artists,
+  });
+}

@@ -43,8 +43,8 @@ class JellyfinAPI implements APIService {
       _userId != '' &&
       _libraryId != '';
 
-  String get _reqBaseUrl => _jellyfinUrl;
-  Map<String, String> get _reqHeaders =>
+  String get reqBaseUrl => _jellyfinUrl;
+  Map<String, String> get reqHeaders =>
       {'X-MediaBrowser-Token': _mediaBrowserToken};
 
   //                      _ _
@@ -72,8 +72,8 @@ class JellyfinAPI implements APIService {
 
       var response = await http.get(
           Uri.parse(
-              '$_reqBaseUrl/Users/$_userId/Items?parentId=$_libraryId&includeItemTypes=MusicAlbum&recursive=true'),
-          headers: _reqHeaders);
+              '$reqBaseUrl/Users/$_userId/Items?parentId=$_libraryId&includeItemTypes=MusicAlbum&recursive=true'),
+          headers: reqHeaders);
 
       if (response.statusCode == 200) {
         final int albumCount = jsonDecode(response.body)['TotalRecordCount'];
@@ -112,11 +112,11 @@ class JellyfinAPI implements APIService {
 
     // a little on the paranoid side, since we already have the album info in 99% of the cases
     if (albumInfo == null) {
-      final albumInfoUrl = '$_reqBaseUrl/Users/$_userId/Items?ids=$albumId';
+      final albumInfoUrl = '$reqBaseUrl/Users/$_userId/Items?ids=$albumId';
 
       final response = await http.get(
         Uri.parse(albumInfoUrl),
-        headers: _reqHeaders,
+        headers: reqHeaders,
       );
 
       if (response.statusCode == 200) {
@@ -129,11 +129,11 @@ class JellyfinAPI implements APIService {
 
     List<SongInfo> songs = [];
     final String songsInfoUrl =
-        '$_reqBaseUrl/Users/$_userId/Items?parentId=$albumId&includeItemTypes=Audio&recursive=true';
+        '$reqBaseUrl/Users/$_userId/Items?parentId=$albumId&includeItemTypes=Audio&recursive=true';
 
     final response = await http.get(
       Uri.parse(songsInfoUrl),
-      headers: _reqHeaders,
+      headers: reqHeaders,
     );
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
@@ -266,7 +266,7 @@ class JellyfinAPI implements APIService {
     return NetworkToFileImage(
       url: url,
       file: await fileImage(imageFilename),
-      headers: _reqHeaders,
+      headers: reqHeaders,
     );
   }
 
@@ -278,7 +278,7 @@ class JellyfinAPI implements APIService {
   }) {
     if (primaryImageTag != null) {
       final String url =
-          '$_reqBaseUrl/Items/$itemId/Images/Primary?tag=$primaryImageTag';
+          '$reqBaseUrl/Items/$itemId/Images/Primary?tag=$primaryImageTag';
 
       return FutureBuilder<ImageProvider>(
         future: _imageWithCache(

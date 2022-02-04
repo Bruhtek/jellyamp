@@ -16,6 +16,7 @@ enum QueueLoopMode {
 abstract class AudioPlayerService {
   Stream<bool> get isPlaying;
   Stream<bool> get isShuffle;
+
   Stream<AudioProcessingState> get audioProcessingState;
   Stream<QueueLoopMode> get loopMode;
 

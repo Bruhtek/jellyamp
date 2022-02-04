@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jellyamp/api/jellyfin.dart';
+import 'package:jellyamp/audio/just_audio_player.dart';
 import 'package:provider/provider.dart';
 
 import 'package:jellyamp/classes/audio.dart';
@@ -87,6 +88,21 @@ class _AlbumItemState extends State<AlbumItem> {
                             overflow: TextOverflow.ellipsis,
                           )
                         : null,
+                    onTap: () {
+                      Provider.of<JustAudioPlayer>(context, listen: false)
+                          .playList(
+                        [
+                          AudioMetadata(
+                            id: songInfo.id,
+                            albumId: albumInfos.id,
+                            title: songInfo.title,
+                            primaryImageTag: songInfo.primaryImageTag,
+                            artists: songInfo.artists,
+                          )
+                        ],
+                        context,
+                      );
+                    },
                   );
                 },
                 separatorBuilder: (context, index) =>
