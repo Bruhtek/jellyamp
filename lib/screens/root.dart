@@ -17,7 +17,7 @@ class Root extends StatefulWidget {
 class _RootState extends State<Root> {
   @override
   Widget build(BuildContext context) {
-    return MainScreen();
+    return const MainScreen();
   }
 }
 

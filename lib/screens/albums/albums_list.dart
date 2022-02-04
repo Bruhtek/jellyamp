@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:jellyamp/api/images.dart';
+import 'package:jellyamp/api/jellyfin.dart';
 import 'package:provider/provider.dart';
 
-import 'package:jellyamp/api/albums.dart';
 import 'package:jellyamp/classes/viewtype.dart';
 import 'package:jellyamp/classes/audio.dart';
 
@@ -20,7 +19,7 @@ class _AlbumsListState extends State<AlbumsList> {
   @override
   void initState() {
     albumInfos =
-        Provider.of<Albums>(context, listen: false).fetchAlbumsSorted();
+        Provider.of<JellyfinAPI>(context, listen: false).fetchAlbumsSorted();
     super.initState();
   }
 
@@ -75,7 +74,7 @@ Widget _buildAlbumList(BuildContext context, List<AlbumInfo> albumInfos) {
           aspectRatio: 1 / 1,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(24.0),
-            child: imageIfTagExists(
+            child: Provider.of<JellyfinAPI>(context).imageIfTagExists(
               primaryImageTag: albumInfo.primaryImageTag,
               itemId: albumInfo.id,
             ),
@@ -136,7 +135,7 @@ Widget _buildAlbumGrid(BuildContext context, List<AlbumInfo> albumInfos) {
                 children: [
                   AspectRatio(
                     aspectRatio: 1 / 1,
-                    child: imageIfTagExists(
+                    child: Provider.of<JellyfinAPI>(context).imageIfTagExists(
                       primaryImageTag: albumInfo.primaryImageTag,
                       itemId: albumInfo.id,
                     ),
