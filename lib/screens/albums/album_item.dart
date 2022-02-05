@@ -60,7 +60,7 @@ class _AlbumItemState extends State<AlbumItem> {
                   ),
                 ];
               },
-              body: ListView.separated(
+              body: ListView.builder(
                 itemCount: itemCount,
                 itemBuilder: (context, index) {
                   final songInfo = albumInfos.songs![index];
@@ -107,8 +107,6 @@ class _AlbumItemState extends State<AlbumItem> {
                     },
                   );
                 },
-                separatorBuilder: (context, index) =>
-                    const Divider(color: Colors.black54),
               ),
             ),
           );
