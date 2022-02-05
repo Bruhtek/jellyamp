@@ -26,8 +26,6 @@ abstract class AudioPlayerService {
   bool get hasPrevious;
   bool get hasNext;
 
-  //TODO: currentQueue
-
   Future<void> seekToPrevious();
   Future<void> seekToNext();
 
@@ -38,9 +36,6 @@ abstract class AudioPlayerService {
   Future<void> pause();
   Future<void> seekToStart();
   Future<void> seekToIndex(int index);
-
-  //TODO: add loading playlists
-  //Future<Duration?> loadQueue(list of playlist items)
 
   void playList(List<AudioMetadata> items, BuildContext context);
 }

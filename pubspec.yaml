@@ -42,6 +42,7 @@ dependencies:
   network_to_file_image: ^3.0.3
   transparent_image: ^2.0.0
   shared_preferences: ^2.0.11
+  multiple_stream_builder: ^2.0.0
 
 dev_dependencies:
   flutter_test:

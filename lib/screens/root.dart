@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jellyamp/screens/player/panel/panel.dart';
 
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -43,7 +44,7 @@ class _MainScreenState extends State<MainScreen> {
           body: SlidingUpPanel(
             controller: panelController,
             panel: const Center(
-              child: Text("Panel"),
+              child: Player(),
             ),
             collapsed: InkWell(
               onTap: () {

@@ -10,7 +10,8 @@ class JustAudioPlayer implements AudioPlayerService {
   ConcatenatingAudioSource? concatenatingAudioSource;
 
   // TODO: methods to add music to concatenating audio source, then play them
-
+  
+  @override
   void playList(List<AudioMetadata> songList, BuildContext context) async {
     List<UriAudioSource> uriAudioSourceList = [];
 
