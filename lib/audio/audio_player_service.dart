@@ -1,3 +1,6 @@
+import 'package:flutter/cupertino.dart';
+import 'package:jellyamp/classes/audio.dart';
+
 enum AudioProcessingState {
   idle,
   loading,
@@ -38,4 +41,6 @@ abstract class AudioPlayerService {
 
   //TODO: add loading playlists
   //Future<Duration?> loadQueue(list of playlist items)
+
+  void playList(List<AudioMetadata> items, BuildContext context);
 }

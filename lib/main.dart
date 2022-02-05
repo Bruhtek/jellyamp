@@ -29,9 +29,9 @@ class MainApp extends StatelessWidget {
         Provider<PanelController>(
           create: (_) => PanelController(),
         ),
-        Provider<JustAudioPlayer>(
+        Provider<AudioPlayerService>(
           create: (_) => JustAudioPlayer(),
-          dispose: (_, value) => value.dispose(),
+          dispose: (_, value) => (value as JustAudioPlayer).dispose(),
         ),
         Provider<JellyfinAPI>(
           create: (_) => JellyfinAPI(

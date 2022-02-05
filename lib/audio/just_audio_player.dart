@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:jellyamp/api/jellyfin.dart';
 import 'package:jellyamp/audio/audio_player_service.dart';
 import 'package:jellyamp/classes/audio.dart';
@@ -10,7 +11,7 @@ class JustAudioPlayer implements AudioPlayerService {
 
   // TODO: methods to add music to concatenating audio source, then play them
 
-  void playList(List<AudioMetadata> songList, var context) async {
+  void playList(List<AudioMetadata> songList, BuildContext context) async {
     List<UriAudioSource> uriAudioSourceList = [];
 
     JellyfinAPI jellyfinAPI = Provider.of<JellyfinAPI>(context, listen: false);
