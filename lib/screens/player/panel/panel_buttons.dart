@@ -47,7 +47,7 @@ class PlayerButtons extends StatelessWidget {
 
   Widget _shuffleButton(bool enabled, AudioPlayerService audioPlayerService) {
     return IconButton(
-      icon: enabled
+      icon: !enabled
           ? const Icon(Icons.shuffle_rounded)
           : const Icon(Icons.shuffle_rounded, color: Colors.blueAccent),
       onPressed: () => audioPlayerService.setShuffle(!enabled),
@@ -102,8 +102,12 @@ class PlayerButtons extends StatelessWidget {
       children: [
         StreamBuilder<bool>(
           stream: audioPlayerService.isShuffle,
-          builder: (_, snapshot) =>
-              _shuffleButton(snapshot.data!, audioPlayerService),
+          builder: (_, snapshot) {
+            if (snapshot.hasData) {
+              return _shuffleButton(snapshot.data!, audioPlayerService);
+            }
+            return const CircularProgressIndicator();
+          },
         ),
         StreamBuilder2<AudioProcessingState, QueueLoopMode>(
           streams: Tuple2(
@@ -114,8 +118,12 @@ class PlayerButtons extends StatelessWidget {
         ),
         StreamBuilder<AudioProcessingState>(
           stream: audioPlayerService.audioProcessingState,
-          builder: (_, snapshot) =>
-              _playPauseButton(snapshot.data!, audioPlayerService),
+          builder: (_, snapshot) {
+            if (snapshot.hasData) {
+              return _playPauseButton(snapshot.data!, audioPlayerService);
+            }
+            return const CircularProgressIndicator();
+          },
         ),
         StreamBuilder2<AudioProcessingState, QueueLoopMode>(
           streams: Tuple2(
@@ -126,8 +134,12 @@ class PlayerButtons extends StatelessWidget {
         ),
         StreamBuilder<QueueLoopMode>(
           stream: audioPlayerService.loopMode,
-          builder: (_, snapshot) =>
-              _loopButton(snapshot.data!, audioPlayerService),
+          builder: (_, snapshot) {
+            if (snapshot.hasData) {
+              return _loopButton(snapshot.data!, audioPlayerService);
+            }
+            return const CircularProgressIndicator();
+          },
         ),
       ],
     );
