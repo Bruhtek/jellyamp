@@ -35,6 +35,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int currentIndex = 1;
+  PageController _pageController = PageController(initialPage: 1);
 
   @override
   Widget build(BuildContext context) {
@@ -43,9 +44,7 @@ class _MainScreenState extends State<MainScreen> {
         return Scaffold(
           body: SlidingUpPanel(
             controller: panelController,
-            panel: const Center(
-              child: Player(),
-            ),
+            panel: const Player(),
             collapsed: InkWell(
               onTap: () {
                 panelController.open();
@@ -66,8 +65,13 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
             ),
-            body: IndexedStack(
-              index: currentIndex,
+            body: PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  currentIndex = index;
+                });
+              },
               children: [
                 widget.homeWidget,
                 widget.albumsWidget,
@@ -81,17 +85,17 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  void navigateToIndex(int index) {
-    setState(() {
-      currentIndex = index;
-    });
-  }
-
   NavigationBar bottomNavigationBar() {
     return NavigationBar(
       selectedIndex: currentIndex,
       labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-      onDestinationSelected: navigateToIndex,
+      onDestinationSelected: (index) {
+        _pageController.animateToPage(
+          index,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.ease,
+        );
+      },
       destinations: const <NavigationDestination>[
         NavigationDestination(
           icon: Icon(Icons.home_outlined),

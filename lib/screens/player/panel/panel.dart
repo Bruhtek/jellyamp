@@ -19,6 +19,18 @@ class _PlayerState extends State<Player> {
     AudioPlayerService audioPlayerService =
         Provider.of<AudioPlayerService>(context);
 
-    return PlayerButtons(context);
+    return Column(
+      children: [
+        Expanded(
+          child: PageView(
+            children: [
+              Container(color: Colors.red),
+              Container(color: Colors.blue),
+            ],
+          ),
+        ),
+        PlayerButtons(context),
+      ],
+    );
   }
 }
