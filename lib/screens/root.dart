@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jellyamp/screens/player/panel/panel.dart';
+import 'package:jellyamp/screens/panel/player/player.dart';
 
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';

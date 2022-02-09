@@ -10,7 +10,7 @@ class JustAudioPlayer implements AudioPlayerService {
   ConcatenatingAudioSource? concatenatingAudioSource;
 
   // TODO: methods to add music to concatenating audio source, then play them
-  
+
   @override
   void playList(List<AudioMetadata> songList, BuildContext context) async {
     List<UriAudioSource> uriAudioSourceList = [];
@@ -52,6 +52,14 @@ class JustAudioPlayer implements AudioPlayerService {
       _audioPlayer.loopModeStream.map((_loopModeMap));
 
   @override
+  Stream<Duration> get positionStream => _audioPlayer.positionStream;
+  @override
+  Stream<SequenceState?> get sequenceStateStream =>
+      _audioPlayer.sequenceStateStream;
+  @override
+  Stream<Duration?> get durationStream => _audioPlayer.durationStream;
+
+  @override
   bool get hasPrevious => _audioPlayer.hasPrevious;
   @override
   bool get hasNext => _audioPlayer.hasNext;
@@ -91,6 +99,9 @@ class JustAudioPlayer implements AudioPlayerService {
   @override
   Future<void> seekToIndex(int index) =>
       _audioPlayer.seek(Duration.zero, index: index);
+  @override
+  Future<void> seek(int seconds) =>
+      _audioPlayer.seek(Duration(seconds: seconds));
 
   Future<void> dispose() => _audioPlayer.dispose();
 

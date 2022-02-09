@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:jellyamp/audio/audio_player_service.dart';
-import 'package:jellyamp/screens/player/panel/panel_main.dart';
-import 'package:jellyamp/screens/player/panel/panel_buttons.dart';
+import 'package:jellyamp/screens/panel/player/player_main.dart';
+import 'package:jellyamp/screens/panel/player/player_buttons.dart';
 
 import 'package:provider/provider.dart';
 
@@ -23,13 +23,14 @@ class _PlayerState extends State<Player> {
       children: [
         Expanded(
           child: PageView(
+            scrollDirection: Axis.horizontal,
             children: [
-              Container(color: Colors.red),
+              const PlayerMain(),
               Container(color: Colors.blue),
             ],
           ),
         ),
-        PlayerButtons(context),
+        const PlayerButtons(),
       ],
     );
   }

@@ -7,9 +7,7 @@ import 'package:multiple_stream_builder/multiple_stream_builder.dart';
 import 'package:provider/provider.dart';
 
 class PlayerButtons extends StatelessWidget {
-  const PlayerButtons(this.context, {Key? key}) : super(key: key);
-
-  final BuildContext context;
+  const PlayerButtons({Key? key}) : super(key: key);
 
   Widget _playPauseButton(
       AudioProcessingState state, AudioPlayerService audioPlayerService) {
@@ -109,11 +107,8 @@ class PlayerButtons extends StatelessWidget {
             return const CircularProgressIndicator();
           },
         ),
-        StreamBuilder2<AudioProcessingState, QueueLoopMode>(
-          streams: Tuple2(
-            audioPlayerService.audioProcessingState,
-            audioPlayerService.loopMode,
-          ),
+        StreamBuilder<SequenceState?>(
+          stream: audioPlayerService.sequenceStateStream,
           builder: (_, __) => _previousButton(audioPlayerService),
         ),
         StreamBuilder<AudioProcessingState>(
@@ -125,11 +120,8 @@ class PlayerButtons extends StatelessWidget {
             return const CircularProgressIndicator();
           },
         ),
-        StreamBuilder2<AudioProcessingState, QueueLoopMode>(
-          streams: Tuple2(
-            audioPlayerService.audioProcessingState,
-            audioPlayerService.loopMode,
-          ),
+        StreamBuilder<SequenceState?>(
+          stream: audioPlayerService.sequenceStateStream,
           builder: (_, __) => _nextButton(audioPlayerService),
         ),
         StreamBuilder<QueueLoopMode>(
