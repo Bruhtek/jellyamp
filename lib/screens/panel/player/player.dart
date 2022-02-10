@@ -26,8 +26,13 @@ class _PlayerState extends State<Player> {
             scrollDirection: Axis.horizontal,
             children: [
               const PlayerMain(),
-              Container(color: Colors.blue),
+              Container(margin: const EdgeInsets.all(8.0), color: Colors.blue),
             ],
+            controller: PageController(
+              initialPage: 0,
+              viewportFraction: 0.9,
+              keepPage: false,
+            ),
           ),
         ),
         const PlayerButtons(),

@@ -18,40 +18,43 @@ class PlayerMain extends StatelessWidget {
     final position = positionStream.inSeconds;
     final duration = durationStream.inSeconds;
 
-    return Column(
-      children: [
-        Expanded(
-          flex: 2,
-          child: AspectRatio(
-            aspectRatio: 1 / 1,
-            child: Provider.of<JellyfinAPI>(context).imageIfTagExists(
-              primaryImageTag: currentItemTag.primaryImageTag,
-              itemId: currentItemTag.albumId,
-              alternative: const Icon(
-                Icons.music_note_rounded,
-                size: 50,
+    return Container(
+      margin: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Expanded(
+            flex: 2,
+            child: AspectRatio(
+              aspectRatio: 1 / 1,
+              child: Provider.of<JellyfinAPI>(context).imageIfTagExists(
+                primaryImageTag: currentItemTag.primaryImageTag,
+                itemId: currentItemTag.albumId,
+                alternative: const Icon(
+                  Icons.music_note_rounded,
+                  size: 50,
+                ),
               ),
             ),
           ),
-        ),
-        Slider(
-          min: 0,
-          max: duration.toDouble(),
-          value: position.toDouble(),
-          onChanged: (double val) {
-            Provider.of<AudioPlayerService>(context, listen: false)
-                .seek(val.toInt());
-          },
-        ),
-        Text(
-          currentItemTag.title,
-          style: Theme.of(context).textTheme.headline4,
-        ),
-        Text(
-          currentItemTag.artists.join(", "),
-          style: Theme.of(context).textTheme.subtitle1,
-        ),
-      ],
+          Slider(
+            min: 0,
+            max: duration.toDouble(),
+            value: position.toDouble(),
+            onChanged: (double val) {
+              Provider.of<AudioPlayerService>(context, listen: false)
+                  .seek(val.toInt());
+            },
+          ),
+          Text(
+            currentItemTag.title,
+            style: Theme.of(context).textTheme.headline4,
+          ),
+          Text(
+            currentItemTag.artists.join(", "),
+            style: Theme.of(context).textTheme.subtitle1,
+          ),
+        ],
+      ),
     );
   }
 
