@@ -275,10 +275,12 @@ class JellyfinAPI implements APIService {
     required String itemId,
     Widget? alternative,
     BoxFit? fit,
+    int maxWidth = 256,
+    int maxHeight = 256,
   }) {
     if (primaryImageTag != null) {
       final String url =
-          '$reqBaseUrl/Items/$itemId/Images/Primary?tag=$primaryImageTag';
+          '$reqBaseUrl/Items/$itemId/Images/Primary?tag=$primaryImageTag?maxWidth=$maxWidth&maxHeight=$maxHeight';
 
       return FutureBuilder<ImageProvider>(
         future: _imageWithCache(
