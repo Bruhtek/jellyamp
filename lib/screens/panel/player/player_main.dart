@@ -19,7 +19,7 @@ class PlayerMain extends StatelessWidget {
     final duration = durationStream.inSeconds;
 
     return Container(
-      margin: const EdgeInsets.all(8.0),
+      margin: const EdgeInsets.only(top: 8.0),
       child: Column(
         children: [
           Expanded(
