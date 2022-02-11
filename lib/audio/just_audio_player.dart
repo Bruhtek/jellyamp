@@ -41,6 +41,25 @@ class JustAudioPlayer implements AudioPlayerService {
   }
 
   @override
+  void addToQueue(List<AudioMetadata> items, BuildContext context) async {
+    if (concatenatingAudioSource == null) {
+      return playList(items, context);
+    }
+
+    JellyfinAPI jellyfinAPI = Provider.of<JellyfinAPI>(context, listen: false);
+
+    for (var item in items) {
+      await concatenatingAudioSource!.add(
+        AudioSource.uri(
+          Uri.parse("${jellyfinAPI.reqBaseUrl}/Items/${item.id}/Download"),
+          headers: jellyfinAPI.reqHeaders,
+          tag: item,
+        ),
+      );
+    }
+  }
+
+  @override
   Stream<bool> get isPlaying => _audioPlayer.playingStream;
   @override
   Stream<bool> get isShuffle => _audioPlayer.shuffleModeEnabledStream;

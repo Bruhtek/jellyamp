@@ -44,4 +44,5 @@ abstract class AudioPlayerService {
   Future<void> seek(int seconds);
 
   void playList(List<AudioMetadata> items, BuildContext context);
+  void addToQueue(List<AudioMetadata> items, BuildContext context);
 }
