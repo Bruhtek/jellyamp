@@ -12,11 +12,13 @@ class SongInfo {
   List<String>? artists;
   //primaryImage from album, since song doesn't have one
   String? primaryImageTag;
+  int trackNumber;
 
   SongInfo({
     required this.id,
     required this.title,
     required this.albumId,
+    required this.trackNumber,
     this.artists,
     this.primaryImageTag,
   });
@@ -32,6 +34,7 @@ class SongInfo {
       id: json['Id'] as String,
       title: json['Name'] as String,
       albumId: json['AlbumId'] as String,
+      trackNumber: (json['IndexNumber'] ?? 0) as int,
       artists: artists,
       primaryImageTag: json['AlbumPrimaryImageTag'] as String?,
     );

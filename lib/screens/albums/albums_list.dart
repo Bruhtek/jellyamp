@@ -94,7 +94,6 @@ class _AlbumsListState extends State<AlbumsList> {
             List<AudioMetadata> songsList = [];
 
             for (String index in selectedAlbums) {
-              print(index);
               for (SongInfo song in albums[index]!.songs) {
                 songsList.add(AudioMetadata(
                   id: song.id,

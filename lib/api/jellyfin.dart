@@ -88,10 +88,15 @@ class JellyfinAPI implements APIService {
         if (responseSongs.statusCode == 200) {
           final int songCount =
               jsonDecode(responseSongs.body)['TotalRecordCount'];
+              
           for (int i = 0; i < songCount; i++) {
             SongInfo temp =
                 SongInfo.fromJson(jsonDecode(responseSongs.body)['Items'][i]);
             albums[temp.albumId]!.songs.add(temp);
+          }
+          
+          for(AlbumInfo albumInfo in albums.values) {
+            albumInfo.songs.sort((a, b) => a.trackNumber.compareTo(b.trackNumber));
           }
         }
 
