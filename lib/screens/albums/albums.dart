@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:jellyamp/screens/albums/albums_list.dart';
 import 'package:jellyamp/screens/albums/album_item.dart';
-import 'package:jellyamp/classes/viewtype.dart';
 
 class Albums extends StatelessWidget {
   const Albums({Key? key}) : super(key: key);

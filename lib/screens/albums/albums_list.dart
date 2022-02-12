@@ -18,7 +18,7 @@ class _AlbumsListState extends State<AlbumsList> {
 
   Viewtype _viewtype = Viewtype.grid;
   // list of selected albums, to be dynamically updated when the user selects an album
-  List<int> _selectedIndexes = [];
+  List<String> selectedAlbums = [];
 
   @override
   void initState() {
@@ -71,7 +71,7 @@ class _AlbumsListState extends State<AlbumsList> {
   }
 
   AppBar _appBar() {
-    if (_selectedIndexes.isEmpty) {
+    if (selectedAlbums.isEmpty) {
       return AppBar(
         title: const Text('Albums'),
         actions: [
@@ -81,16 +81,35 @@ class _AlbumsListState extends State<AlbumsList> {
     }
 
     return AppBar(
-      title: Text('${_selectedIndexes.length} selected'),
+      title: Text('${selectedAlbums.length} selected'),
       actions: [
         IconButton(
           icon: const Icon(Icons.play_arrow_rounded),
           tooltip: 'Play selected albums',
           onPressed: () {
-            //TODO: after detailedAlbumContext is properly implemented, this should be replaced by a call to it
-            //Provider.of<AudioPlayerService>(context, listen: false).playList
+            Map<String, AlbumInfo> albums =
+                Provider.of<JellyfinAPI>(context, listen: false)
+                    .detailedAlbumInfos!;
+
+            List<AudioMetadata> songsList = [];
+
+            for (String index in selectedAlbums) {
+              print(index);
+              for (SongInfo song in albums[index]!.songs) {
+                songsList.add(AudioMetadata(
+                  id: song.id,
+                  albumId: song.albumId,
+                  title: song.title,
+                  artists: song.artists,
+                  primaryImageTag: song.primaryImageTag,
+                ));
+              }
+            }
+
+            Provider.of<AudioPlayerService>(context, listen: false)
+                .playList(songsList, context);
             setState(() {
-              _selectedIndexes.clear();
+              selectedAlbums.clear();
             });
           },
         ),
@@ -146,7 +165,7 @@ class _AlbumsListState extends State<AlbumsList> {
         return ListTile(
           onTap: () {
             setState(() {
-              _selectedIndexes.clear();
+              selectedAlbums.clear();
             });
             Navigator.pushNamed(
               context,
@@ -159,10 +178,10 @@ class _AlbumsListState extends State<AlbumsList> {
           },
           onLongPress: () {
             setState(() {
-              if (_selectedIndexes.contains(index)) {
-                _selectedIndexes.remove(index);
+              if (selectedAlbums.contains(albumInfo.id)) {
+                selectedAlbums.remove(albumInfo.id);
               } else {
-                _selectedIndexes.add(index);
+                selectedAlbums.add(albumInfo.id);
               }
             });
           },
@@ -190,7 +209,7 @@ class _AlbumsListState extends State<AlbumsList> {
                   overflow: TextOverflow.ellipsis,
                 )
               : null,
-          trailing: _selectedIndexes.contains(index)
+          trailing: selectedAlbums.contains(albumInfo.id)
               ? const Icon(Icons.check_circle_rounded)
               : null,
         );
@@ -215,7 +234,7 @@ class _AlbumsListState extends State<AlbumsList> {
         return InkResponse(
           onTap: () {
             setState(() {
-              _selectedIndexes.clear();
+              selectedAlbums.clear();
             });
             Navigator.pushNamed(
               context,
@@ -228,10 +247,10 @@ class _AlbumsListState extends State<AlbumsList> {
           },
           onLongPress: () {
             setState(() {
-              if (_selectedIndexes.contains(index)) {
-                _selectedIndexes.remove(index);
+              if (selectedAlbums.contains(albumInfo.id)) {
+                selectedAlbums.remove(albumInfo.id);
               } else {
-                _selectedIndexes.add(index);
+                selectedAlbums.add(albumInfo.id);
               }
             });
           },
@@ -296,7 +315,7 @@ class _AlbumsListState extends State<AlbumsList> {
       ),
     ];
 
-    if (_selectedIndexes.contains(index)) {
+    if (selectedAlbums.contains(albumInfo.id)) {
       results.add(
         Positioned(
           top: 0,

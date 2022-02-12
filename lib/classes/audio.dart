@@ -8,6 +8,7 @@ class AlbumArguments {
 class SongInfo {
   final String id;
   final String title;
+  final String albumId;
   List<String>? artists;
   //primaryImage from album, since song doesn't have one
   String? primaryImageTag;
@@ -15,6 +16,7 @@ class SongInfo {
   SongInfo({
     required this.id,
     required this.title,
+    required this.albumId,
     this.artists,
     this.primaryImageTag,
   });
@@ -29,6 +31,7 @@ class SongInfo {
     return SongInfo(
       id: json['Id'] as String,
       title: json['Name'] as String,
+      albumId: json['AlbumId'] as String,
       artists: artists,
       primaryImageTag: json['AlbumPrimaryImageTag'] as String?,
     );
@@ -39,14 +42,14 @@ class AlbumInfo {
   final String id;
   final String title;
   List<String>? artists;
-  List<SongInfo>? songs;
+  List<SongInfo> songs;
   String? primaryImageTag;
 
   AlbumInfo({
     required this.id,
     required this.title,
     this.artists,
-    this.songs,
+    required this.songs,
     this.primaryImageTag,
   });
 
@@ -61,11 +64,10 @@ class AlbumInfo {
       id: json['Id'] as String,
       title: json['Name'] as String,
       artists: albumArtists,
+      songs: [],
       primaryImageTag: json['ImageTags']['Primary'] as String?,
     );
   }
-
-  //TODO: Factory for the songs inc version
 }
 
 class AudioMetadata {

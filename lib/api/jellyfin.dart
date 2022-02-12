@@ -11,13 +11,15 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class JellyfinAPI implements APIService {
+  @override
+  Map<String, AlbumInfo>? detailedAlbumInfos;
+
   //    ______ _   ___      __
   //   |  ____| \ | \ \    / /
   //   | |__  |  \| |\ \  / /
   //   |  __| | . ` | \ \/ /
   //   | |____| |\  |  \  /
   //   |______|_| \_|   \/
-  //
   //
 
   late String _mediaBrowserToken;
@@ -59,44 +61,48 @@ class JellyfinAPI implements APIService {
   SortType sortType = SortType.albumArtist;
 
   @override
-  //TODO: this is redundant, we should replace all use with detailedAlbumInfos
-  List<AlbumInfo>? albumInfos;
+  Future<Map<String, AlbumInfo>> fetchAlbums() async {
+    if (detailedAlbumInfos == null) {
+      Map<String, AlbumInfo> albums = {};
 
-  @override
-  Map<String, AlbumInfo>? detailedAlbumInfos;
-
-  @override
-  Future<List<AlbumInfo>> fetchAlbums() async {
-    if (albumInfos == null) {
-      List<AlbumInfo> albums = [];
-
-      var response = await http.get(
+      var responseAlbums = await http.get(
           Uri.parse(
               '$reqBaseUrl/Users/$_userId/Items?parentId=$_libraryId&includeItemTypes=MusicAlbum&recursive=true'),
           headers: reqHeaders);
 
-      if (response.statusCode == 200) {
-        final int albumCount = jsonDecode(response.body)['TotalRecordCount'];
+      if (responseAlbums.statusCode == 200) {
+        final int albumCount =
+            jsonDecode(responseAlbums.body)['TotalRecordCount'];
 
         for (int i = 0; i < albumCount; i++) {
-          albums.add(
-              AlbumInfo.fromJsonNoSongs(jsonDecode(response.body)['Items'][i]));
+          AlbumInfo temp = AlbumInfo.fromJsonNoSongs(
+              jsonDecode(responseAlbums.body)['Items'][i]);
+          albums[temp.id] = temp;
         }
 
-        // ignore: prefer_for_elements_to_map_fromiterable
-        detailedAlbumInfos = Map.fromIterable(
-          albums,
-          key: (e) => e.id,
-          value: (e) => e,
-        );
-        albumInfos = albums;
+        var responseSongs = await http.get(
+            Uri.parse(
+                '$reqBaseUrl/Users/$_userId/Items?parentId=$_libraryId&includeItemTypes=Audio&recursive=true'),
+            headers: reqHeaders);
+
+        if (responseSongs.statusCode == 200) {
+          final int songCount =
+              jsonDecode(responseSongs.body)['TotalRecordCount'];
+          for (int i = 0; i < songCount; i++) {
+            SongInfo temp =
+                SongInfo.fromJson(jsonDecode(responseSongs.body)['Items'][i]);
+            albums[temp.albumId]!.songs.add(temp);
+          }
+        }
+
+        detailedAlbumInfos = albums;
       } else {
         throw Exception("Failed to fetch albums!");
       }
 
       return albums;
     } else {
-      return albumInfos!;
+      return detailedAlbumInfos!;
     }
   }
 
@@ -104,10 +110,8 @@ class JellyfinAPI implements APIService {
   Future<AlbumInfo> fetchAlbumSongs(String albumId) async {
     AlbumInfo? albumInfo = detailedAlbumInfos?[albumId];
 
-    if (albumInfo != null && albumInfo.songs != null) {
-      if (albumInfo.songs!.isNotEmpty) {
-        return albumInfo;
-      }
+    if (albumInfo != null && albumInfo.songs.isNotEmpty) {
+      return albumInfo;
     }
 
     // a little on the paranoid side, since we already have the album info in 99% of the cases
@@ -147,7 +151,6 @@ class JellyfinAPI implements APIService {
     } else {
       throw Exception("Failed to fetch songs info!");
     }
-
     return albumInfo;
   }
 
@@ -184,7 +187,8 @@ class JellyfinAPI implements APIService {
 
   @override
   Future<List<AlbumInfo>> fetchAlbumsSorted() async {
-    List<AlbumInfo> albums = await fetchAlbums();
+    List<AlbumInfo> albums =
+        (await fetchAlbums()).entries.map((e) => e.value).toList();
 
     //sort by album artist name, and if equal, by album name
     switch (sortType) {
@@ -207,8 +211,8 @@ class JellyfinAPI implements APIService {
 
   @override
   //TODO: change this, it shouldn't just delete cached data, since we could have no connection
-  Future<List<AlbumInfo>> forceFetchAlbums() async {
-    albumInfos = null;
+  Future<Map<String, AlbumInfo>> forceFetchAlbums() async {
+    detailedAlbumInfos = null;
     return await fetchAlbums();
   }
 

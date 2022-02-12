@@ -28,8 +28,8 @@ class _AlbumItemState extends State<AlbumItem> {
         if (snapshot.hasData) {
           final albumInfos = snapshot.data!;
           int itemCount = 0;
-          if (albumInfos.songs != null) {
-            itemCount = albumInfos.songs!.length;
+          if (albumInfos.songs.isNotEmpty) {
+            itemCount = albumInfos.songs.length;
           }
 
           //TODO: separate everything here into a separate functions
@@ -64,7 +64,7 @@ class _AlbumItemState extends State<AlbumItem> {
                 child: ListView.builder(
                   itemCount: itemCount,
                   itemBuilder: (context, index) {
-                    final songInfo = albumInfos.songs![index];
+                    final songInfo = albumInfos.songs[index];
 
                     return Slidable(
                       groupTag: 0,

@@ -9,13 +9,12 @@ enum SortType {
 
 abstract class APIService {
   SortType sortType = SortType.albumArtist;
-  List<AlbumInfo>? albumInfos;
   Map<String, AlbumInfo>? detailedAlbumInfos;
 
-  Future<List<AlbumInfo>> fetchAlbums();
+  Future<Map<String, AlbumInfo>> fetchAlbums();
   Future<AlbumInfo> fetchAlbumSongs(String albumId);
 
   Future<List<AlbumInfo>> fetchAlbumsSorted();
-  Future<List<AlbumInfo>> forceFetchAlbums();
+  Future<Map<String, AlbumInfo>> forceFetchAlbums();
   Future<bool> correctServerUrl(String url);
 }

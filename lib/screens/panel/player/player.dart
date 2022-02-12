@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:jellyamp/audio/audio_player_service.dart';
 import 'package:jellyamp/screens/panel/player/player_main.dart';
 import 'package:jellyamp/screens/panel/player/player_buttons.dart';
 import 'package:jellyamp/screens/panel/player/queue.dart';
 
-import 'package:provider/provider.dart';
 
 class Player extends StatefulWidget {
   const Player({Key? key}) : super(key: key);
