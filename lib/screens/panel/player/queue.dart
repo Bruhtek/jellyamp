@@ -25,16 +25,30 @@ class Queue extends StatelessWidget {
             itemBuilder: (context, index) {
               return ListTile(
                 selected: index == state.currentIndex,
-                leading: Provider.of<JellyfinAPI>(context).imageIfTagExists(
-                  primaryImageTag: sequence[index].tag.primaryImageTag,
-                  itemId: sequence[index].tag.albumId,
-                  alternative: const Icon(
-                    Icons.music_note_rounded,
-                    size: 50,
+                leading: AspectRatio(
+                  aspectRatio: 1 / 1,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16.0),
+                    child: Provider.of<JellyfinAPI>(context).imageIfTagExists(
+                      primaryImageTag: sequence[index].tag.primaryImageTag,
+                      itemId: sequence[index].tag.albumId,
+                      alternative: const Icon(
+                        Icons.music_note_rounded,
+                        size: 50,
+                      ),
+                    ),
                   ),
                 ),
-                title: Text(sequence[index].tag.title),
-                subtitle: Text(sequence[index].tag.artists.join(', ')),
+                title: Text(
+                  sequence[index].tag.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text(
+                  sequence[index].tag.artists.join(', '),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 onTap: () => audioPlayerService.seekToIndex(index),
               );
             },

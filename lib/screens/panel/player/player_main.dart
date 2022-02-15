@@ -26,12 +26,18 @@ class PlayerMain extends StatelessWidget {
             flex: 2,
             child: AspectRatio(
               aspectRatio: 1 / 1,
-              child: Provider.of<JellyfinAPI>(context).imageIfTagExists(
-                primaryImageTag: currentItemTag.primaryImageTag,
-                itemId: currentItemTag.albumId,
-                alternative: const Icon(
-                  Icons.music_note_rounded,
-                  size: 50,
+              child: AspectRatio(
+                aspectRatio: 1 / 1,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(48.0),
+                  child: Provider.of<JellyfinAPI>(context).imageIfTagExists(
+                    primaryImageTag: currentItemTag.primaryImageTag,
+                    itemId: currentItemTag.albumId,
+                    alternative: const Icon(
+                      Icons.music_note_rounded,
+                      size: 50,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -48,10 +54,12 @@ class PlayerMain extends StatelessWidget {
           Text(
             currentItemTag.title,
             style: Theme.of(context).textTheme.headline4,
+            textAlign: TextAlign.center,
           ),
           Text(
             currentItemTag.artists.join(", "),
             style: Theme.of(context).textTheme.subtitle1,
+            textAlign: TextAlign.center,
           ),
         ],
       ),
