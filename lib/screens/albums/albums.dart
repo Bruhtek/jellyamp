@@ -19,7 +19,7 @@ class Albums extends StatelessWidget {
 }
 
 class AlbumsPage extends StatelessWidget {
-  const AlbumsPage({ Key? key }) : super(key: key);
+  const AlbumsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

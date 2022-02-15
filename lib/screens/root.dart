@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:jellyamp/audio/audio_player_service.dart';
 import 'package:jellyamp/screens/panel/player/player.dart';
 
 import 'package:provider/provider.dart';

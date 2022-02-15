@@ -4,7 +4,6 @@ import 'package:jellyamp/screens/panel/player/player_main.dart';
 import 'package:jellyamp/screens/panel/player/player_buttons.dart';
 import 'package:jellyamp/screens/panel/player/queue.dart';
 
-
 class Player extends StatefulWidget {
   const Player({Key? key}) : super(key: key);
 
