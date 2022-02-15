@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:jellyamp/api/jellyfin.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
+import 'package:jellyamp/api/jellyfin.dart';
+import 'package:jellyamp/audio/audio_player_service.dart';
 import 'package:jellyamp/classes/audio.dart';
 
 class AlbumItem extends StatefulWidget {
@@ -26,10 +28,11 @@ class _AlbumItemState extends State<AlbumItem> {
         if (snapshot.hasData) {
           final albumInfos = snapshot.data!;
           int itemCount = 0;
-          if (albumInfos.songs != null) {
-            itemCount = albumInfos.songs!.length;
+          if (albumInfos.songs.isNotEmpty) {
+            itemCount = albumInfos.songs.length;
           }
 
+          //TODO: separate everything here into a separate functions
           return Scaffold(
             body: NestedScrollView(
               headerSliverBuilder:
@@ -57,40 +60,85 @@ class _AlbumItemState extends State<AlbumItem> {
                   ),
                 ];
               },
-              body: ListView.separated(
-                itemCount: itemCount,
-                itemBuilder: (context, index) {
-                  final songInfo = albumInfos.songs![index];
-                  return ListTile(
-                    leading: AspectRatio(
-                      aspectRatio: 1 / 1,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(24.0),
-                        child:
-                            Provider.of<JellyfinAPI>(context).imageIfTagExists(
-                          primaryImageTag: songInfo.primaryImageTag,
-                          itemId: songInfo.id,
-                        ),
+              body: SlidableAutoCloseBehavior(
+                child: ListView.builder(
+                  itemCount: itemCount,
+                  itemBuilder: (context, index) {
+                    final songInfo = albumInfos.songs[index];
+
+                    return Slidable(
+                      groupTag: 0,
+                      endActionPane: ActionPane(
+                        extentRatio: 1 / 4,
+                        motion: const ScrollMotion(),
+                        children: [
+                          SlidableAction(
+                            icon: Icons.playlist_add_rounded,
+                            onPressed: (context) {
+                              Provider.of<AudioPlayerService>(context,
+                                      listen: false)
+                                  .addToQueue(
+                                [
+                                  AudioMetadata(
+                                    id: songInfo.id,
+                                    albumId: albumInfos.id,
+                                    title: songInfo.title,
+                                    primaryImageTag: songInfo.primaryImageTag,
+                                    artists: songInfo.artists,
+                                  )
+                                ],
+                                context,
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                    ),
-                    title: Text(
-                      songInfo.title,
-                      softWrap: false,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: songInfo.artists != null
-                        ? Text(
-                            songInfo.artists!.join(', '),
-                            softWrap: false,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          )
-                        : null,
-                  );
-                },
-                separatorBuilder: (context, index) =>
-                    const Divider(color: Colors.black54),
+                      child: ListTile(
+                        leading: AspectRatio(
+                          aspectRatio: 1 / 1,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(24.0),
+                            child: Provider.of<JellyfinAPI>(context)
+                                .imageIfTagExists(
+                              primaryImageTag: songInfo.primaryImageTag,
+                              itemId: songInfo.id,
+                            ),
+                          ),
+                        ),
+                        title: Text(
+                          songInfo.title,
+                          softWrap: false,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: songInfo.artists != null
+                            ? Text(
+                                songInfo.artists!.join(', '),
+                                softWrap: false,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              )
+                            : null,
+                        onTap: () {
+                          Provider.of<AudioPlayerService>(context,
+                                  listen: false)
+                              .playList(
+                            [
+                              AudioMetadata(
+                                id: songInfo.id,
+                                albumId: albumInfos.id,
+                                title: songInfo.title,
+                                primaryImageTag: songInfo.primaryImageTag,
+                                artists: songInfo.artists,
+                              )
+                            ],
+                            context,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           );

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:jellyamp/audio/audio_player_service.dart';
+import 'package:jellyamp/screens/panel/player/player.dart';
 
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -6,6 +8,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:jellyamp/screens/albums/albums.dart';
 import 'package:jellyamp/screens/settings/settings.dart';
 import 'package:jellyamp/screens/home/home.dart';
+import 'package:jellyamp/screens/panel/collapsed.dart';
 
 class Root extends StatefulWidget {
   const Root({Key? key}) : super(key: key);
@@ -34,63 +37,45 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int currentIndex = 1;
+  final PageController _pageController = PageController(initialPage: 1);
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<PanelController>(
-      builder: (_, panelController, __) {
-        return Scaffold(
-          body: SlidingUpPanel(
-            controller: panelController,
-            panel: const Center(
-              child: Text("Panel"),
-            ),
-            collapsed: InkWell(
-              onTap: () {
-                panelController.open();
-              },
-              child: Container(
-                color: Colors.blue,
-                child: Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text("Collapsed"),
-                      ElevatedButton(
-                        onPressed: () {},
-                        child: const Text("Button"),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            body: IndexedStack(
-              index: currentIndex,
-              children: [
-                widget.homeWidget,
-                widget.albumsWidget,
-                widget.settingWidget,
-              ],
-            ),
-          ),
-          bottomNavigationBar: bottomNavigationBar(),
-        );
-      },
+    final panelController = Provider.of<PanelController>(context);
+    return Scaffold(
+      body: SlidingUpPanel(
+        controller: panelController,
+        panel: const Player(),
+        collapsed: const MiniPlayer(),
+        body: PageView(
+          controller: _pageController,
+          onPageChanged: (index) {
+            setState(() {
+              currentIndex = index;
+            });
+          },
+          children: [
+            widget.homeWidget,
+            widget.albumsWidget,
+            widget.settingWidget,
+          ],
+        ),
+      ),
+      bottomNavigationBar: bottomNavigationBar(),
     );
-  }
-
-  void navigateToIndex(int index) {
-    setState(() {
-      currentIndex = index;
-    });
   }
 
   NavigationBar bottomNavigationBar() {
     return NavigationBar(
       selectedIndex: currentIndex,
       labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-      onDestinationSelected: navigateToIndex,
+      onDestinationSelected: (index) {
+        _pageController.animateToPage(
+          index,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.ease,
+        );
+      },
       destinations: const <NavigationDestination>[
         NavigationDestination(
           icon: Icon(Icons.home_outlined),

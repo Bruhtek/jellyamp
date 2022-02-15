@@ -1,26 +1,85 @@
+import 'package:flutter/cupertino.dart';
+import 'package:jellyamp/api/jellyfin.dart';
 import 'package:jellyamp/audio/audio_player_service.dart';
+import 'package:jellyamp/classes/audio.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:provider/provider.dart';
 
 class JustAudioPlayer implements AudioPlayerService {
   final AudioPlayer _audioPlayer = AudioPlayer();
+  ConcatenatingAudioSource? concatenatingAudioSource;
+
+  @override
+  void playList(List<AudioMetadata> songList, BuildContext context) async {
+    List<UriAudioSource> uriAudioSourceList = [];
+
+    JellyfinAPI jellyfinAPI = Provider.of<JellyfinAPI>(context, listen: false);
+
+    for (AudioMetadata song in songList) {
+      uriAudioSourceList.add(AudioSource.uri(
+        Uri.parse("${jellyfinAPI.reqBaseUrl}/Items/${song.id}/Download"),
+        headers: jellyfinAPI.reqHeaders,
+        tag: song,
+      ));
+    }
+
+    concatenatingAudioSource = ConcatenatingAudioSource(
+      useLazyPreparation: true,
+      shuffleOrder: DefaultShuffleOrder(),
+      children: uriAudioSourceList,
+    );
+
+    await _audioPlayer.setAudioSource(
+      concatenatingAudioSource!,
+      initialIndex: 0,
+      initialPosition: Duration.zero,
+    );
+
+    _audioPlayer.play();
+  }
+
+  @override
+  void addToQueue(List<AudioMetadata> items, BuildContext context) async {
+    if (concatenatingAudioSource == null) {
+      return playList(items, context);
+    }
+
+    JellyfinAPI jellyfinAPI = Provider.of<JellyfinAPI>(context, listen: false);
+
+    for (var item in items) {
+      await concatenatingAudioSource!.add(
+        AudioSource.uri(
+          Uri.parse("${jellyfinAPI.reqBaseUrl}/Items/${item.id}/Download"),
+          headers: jellyfinAPI.reqHeaders,
+          tag: item,
+        ),
+      );
+    }
+  }
 
   @override
   Stream<bool> get isPlaying => _audioPlayer.playingStream;
   @override
   Stream<bool> get isShuffle => _audioPlayer.shuffleModeEnabledStream;
   @override
-  Stream<AudioProcessingState> get audioProcessingState =>
+  Stream<AudioProcessingState> get audioProcessingStateStream =>
       _audioPlayer.playerStateStream.map((_playerStateMap));
   @override
   Stream<QueueLoopMode> get loopMode =>
       _audioPlayer.loopModeStream.map((_loopModeMap));
 
   @override
+  Stream<Duration> get positionStream => _audioPlayer.positionStream;
+  @override
+  Stream<SequenceState?> get sequenceStateStream =>
+      _audioPlayer.sequenceStateStream;
+  @override
+  Stream<Duration?> get durationStream => _audioPlayer.durationStream;
+
+  @override
   bool get hasPrevious => _audioPlayer.hasPrevious;
   @override
   bool get hasNext => _audioPlayer.hasNext;
-
-  //TODO: currentQueue
 
   @override
   Future<void> seekToPrevious() => _audioPlayer.seekToPrevious();
@@ -57,8 +116,9 @@ class JustAudioPlayer implements AudioPlayerService {
   @override
   Future<void> seekToIndex(int index) =>
       _audioPlayer.seek(Duration.zero, index: index);
-
-  //TODO: implement loading Queue
+  @override
+  Future<void> seek(int seconds) =>
+      _audioPlayer.seek(Duration(seconds: seconds));
 
   Future<void> dispose() => _audioPlayer.dispose();
 

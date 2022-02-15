@@ -1,3 +1,7 @@
+import 'package:flutter/cupertino.dart';
+import 'package:jellyamp/classes/audio.dart';
+import 'package:just_audio/just_audio.dart';
+
 enum AudioProcessingState {
   idle,
   loading,
@@ -16,13 +20,16 @@ enum QueueLoopMode {
 abstract class AudioPlayerService {
   Stream<bool> get isPlaying;
   Stream<bool> get isShuffle;
-  Stream<AudioProcessingState> get audioProcessingState;
+
+  Stream<Duration> get positionStream;
+  Stream<SequenceState?> get sequenceStateStream;
+  Stream<Duration?> get durationStream;
+
+  Stream<AudioProcessingState> get audioProcessingStateStream;
   Stream<QueueLoopMode> get loopMode;
 
   bool get hasPrevious;
   bool get hasNext;
-
-  //TODO: currentQueue
 
   Future<void> seekToPrevious();
   Future<void> seekToNext();
@@ -34,7 +41,8 @@ abstract class AudioPlayerService {
   Future<void> pause();
   Future<void> seekToStart();
   Future<void> seekToIndex(int index);
+  Future<void> seek(int seconds);
 
-  //TODO: add loading playlists
-  //Future<Duration?> loadQueue(list of playlist items)
+  void playList(List<AudioMetadata> items, BuildContext context);
+  void addToQueue(List<AudioMetadata> items, BuildContext context);
 }
