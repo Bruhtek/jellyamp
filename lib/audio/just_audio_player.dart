@@ -9,8 +9,6 @@ class JustAudioPlayer implements AudioPlayerService {
   final AudioPlayer _audioPlayer = AudioPlayer();
   ConcatenatingAudioSource? concatenatingAudioSource;
 
-  // TODO: methods to add music to concatenating audio source, then play them
-
   @override
   void playList(List<AudioMetadata> songList, BuildContext context) async {
     List<UriAudioSource> uriAudioSourceList = [];
@@ -64,7 +62,7 @@ class JustAudioPlayer implements AudioPlayerService {
   @override
   Stream<bool> get isShuffle => _audioPlayer.shuffleModeEnabledStream;
   @override
-  Stream<AudioProcessingState> get audioProcessingState =>
+  Stream<AudioProcessingState> get audioProcessingStateStream =>
       _audioPlayer.playerStateStream.map((_playerStateMap));
   @override
   Stream<QueueLoopMode> get loopMode =>

@@ -111,7 +111,7 @@ class PlayerButtons extends StatelessWidget {
           builder: (_, __) => _previousButton(audioPlayerService),
         ),
         StreamBuilder<AudioProcessingState>(
-          stream: audioPlayerService.audioProcessingState,
+          stream: audioPlayerService.audioProcessingStateStream,
           builder: (_, snapshot) {
             if (snapshot.hasData) {
               return _playPauseButton(snapshot.data!, audioPlayerService);

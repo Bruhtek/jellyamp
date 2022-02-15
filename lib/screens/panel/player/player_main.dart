@@ -75,9 +75,15 @@ class PlayerMain extends StatelessWidget {
         final duration = snapshot.item3;
         if (position.hasData && sequenceState.hasData && duration.hasData) {
           return _playerMain(
-              context, position.data!, sequenceState.data!, duration.data!);
+            context,
+            position.data!,
+            sequenceState.data!,
+            duration.data!,
+          );
         } else {
-          return const CircularProgressIndicator();
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
         }
       },
     );

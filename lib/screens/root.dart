@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jellyamp/audio/audio_player_service.dart';
 import 'package:jellyamp/screens/panel/player/player.dart';
 
 import 'package:provider/provider.dart';
@@ -7,6 +8,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:jellyamp/screens/albums/albums.dart';
 import 'package:jellyamp/screens/settings/settings.dart';
 import 'package:jellyamp/screens/home/home.dart';
+import 'package:jellyamp/screens/panel/collapsed.dart';
 
 class Root extends StatefulWidget {
   const Root({Key? key}) : super(key: key);
@@ -39,49 +41,27 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<PanelController>(
-      builder: (_, panelController, __) {
-        return Scaffold(
-          body: SlidingUpPanel(
-            controller: panelController,
-            panel: const Player(),
-            collapsed: InkWell(
-              onTap: () {
-                panelController.open();
-              },
-              child: Container(
-                color: Colors.blue,
-                child: Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text("Collapsed"),
-                      ElevatedButton(
-                        onPressed: () {},
-                        child: const Text("Button"),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            body: PageView(
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() {
-                  currentIndex = index;
-                });
-              },
-              children: [
-                widget.homeWidget,
-                widget.albumsWidget,
-                widget.settingWidget,
-              ],
-            ),
-          ),
-          bottomNavigationBar: bottomNavigationBar(),
-        );
-      },
+    final panelController = Provider.of<PanelController>(context);
+    return Scaffold(
+      body: SlidingUpPanel(
+        controller: panelController,
+        panel: const Player(),
+        collapsed: const MiniPlayer(),
+        body: PageView(
+          controller: _pageController,
+          onPageChanged: (index) {
+            setState(() {
+              currentIndex = index;
+            });
+          },
+          children: [
+            widget.homeWidget,
+            widget.albumsWidget,
+            widget.settingWidget,
+          ],
+        ),
+      ),
+      bottomNavigationBar: bottomNavigationBar(),
     );
   }
 
