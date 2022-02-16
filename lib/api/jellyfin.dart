@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:network_to_file_image/network_to_file_image.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -25,25 +26,69 @@ class JellyfinAPI implements APIService {
   late String _mediaBrowserToken;
   late String _jellyfinUrl;
   late String _userId;
-  late String _libraryId;
 
   JellyfinAPI({
     mediaBrowserToken,
     jellyfinUrl,
     userId,
-    libraryId,
   }) {
     _mediaBrowserToken = mediaBrowserToken ?? '';
     _jellyfinUrl = jellyfinUrl ?? '';
     _userId = userId ?? '';
-    _libraryId = libraryId ?? '';
+  }
+
+  @override
+  Future<bool> correctServerUrl(String url) async {
+    if (_isUrlValid(url)) {
+      try {
+        final response = await http.get(Uri.parse('$url/System/Info/Public'));
+        if (response.statusCode == 200) {
+          if (response.body.contains('"ProductName":"Jellyfin Server"')) {
+            return true;
+          }
+
+          return false;
+        }
+
+        return false;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    return false;
+  }
+
+  bool _isUrlValid(String? url) {
+    if (url?.endsWith('/') ?? true) {
+      return false;
+    }
+    final uri = Uri.tryParse((url ?? '') + '/');
+    return uri != null && uri.hasAbsolutePath && uri.scheme.startsWith('http');
+  }
+
+  void setJellyfinUrl(String url) {
+    _jellyfinUrl = url;
+  }
+
+  void setToken(String token) {
+    _mediaBrowserToken = token;
+  }
+
+  void setUserId(String userId) {
+    _userId = userId;
+  }
+
+  Future<void> saveEnvToDisk() async {
+    var envBox = await Hive.openBox('env');
+
+    envBox.put("mediaBrowserToken", _mediaBrowserToken);
+    envBox.put("userId", _userId);
+    envBox.put("jellyfinUrl", _jellyfinUrl);
   }
 
   bool get allInfoFilled =>
-      _mediaBrowserToken != '' &&
-      _jellyfinUrl != '' &&
-      _userId != '' &&
-      _libraryId != '';
+      _mediaBrowserToken != '' && _jellyfinUrl != '' && _userId != '';
 
   String get reqBaseUrl => _jellyfinUrl;
   Map<String, String> get reqHeaders =>
@@ -67,7 +112,7 @@ class JellyfinAPI implements APIService {
 
       var responseAlbums = await http.get(
           Uri.parse(
-              '$reqBaseUrl/Users/$_userId/Items?parentId=$_libraryId&includeItemTypes=MusicAlbum&recursive=true'),
+              '$reqBaseUrl/Users/$_userId/Items?includeItemTypes=MusicAlbum&recursive=true'),
           headers: reqHeaders);
 
       if (responseAlbums.statusCode == 200) {
@@ -82,7 +127,7 @@ class JellyfinAPI implements APIService {
 
         var responseSongs = await http.get(
             Uri.parse(
-                '$reqBaseUrl/Users/$_userId/Items?parentId=$_libraryId&includeItemTypes=Audio&recursive=true'),
+                '$reqBaseUrl/Users/$_userId/Items?includeItemTypes=Audio&recursive=true'),
             headers: reqHeaders);
 
         if (responseSongs.statusCode == 200) {
@@ -220,36 +265,6 @@ class JellyfinAPI implements APIService {
   Future<Map<String, AlbumInfo>> forceFetchAlbums() async {
     detailedAlbumInfos = null;
     return await fetchAlbums();
-  }
-
-  @override
-  Future<bool> correctServerUrl(String url) async {
-    if (_isUrlValid(url)) {
-      try {
-        final response = await http.get(Uri.parse('$url/System/Info/Public'));
-        if (response.statusCode == 200) {
-          if (response.body.contains('"ProductName":"Jellyfin Server"')) {
-            return true;
-          }
-
-          return false;
-        }
-
-        return false;
-      } catch (e) {
-        return false;
-      }
-    }
-
-    return false;
-  }
-
-  bool _isUrlValid(String? url) {
-    if (url?.endsWith('/') ?? true) {
-      return false;
-    }
-    final uri = Uri.tryParse((url ?? '') + '/');
-    return uri != null && uri.hasAbsolutePath && uri.scheme.startsWith('http');
   }
 
   //    _____
