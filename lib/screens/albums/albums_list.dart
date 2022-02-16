@@ -80,39 +80,83 @@ class _AlbumsListState extends State<AlbumsList> {
       );
     }
 
+    List<Widget> appBarActions = [
+      IconButton(
+        icon: const Icon(Icons.cancel_rounded),
+        tooltip: 'Cancel selection',
+        onPressed: () => setState(() {
+          selectedAlbums.clear();
+        }),
+      ),
+      IconButton(
+        icon: const Icon(Icons.play_arrow_rounded),
+        tooltip: 'Play selected albums',
+        onPressed: () {
+          Map<String, AlbumInfo> albums =
+              Provider.of<JellyfinAPI>(context, listen: false)
+                  .detailedAlbumInfos!;
+
+          List<AudioMetadata> songsList = [];
+
+          for (String index in selectedAlbums) {
+            for (SongInfo song in albums[index]!.songs) {
+              songsList.add(AudioMetadata(
+                id: song.id,
+                albumId: song.albumId,
+                title: song.title,
+                artists: song.artists,
+                primaryImageTag: song.primaryImageTag,
+              ));
+            }
+          }
+
+          Provider.of<AudioPlayerService>(context, listen: false)
+              .playList(songsList, context);
+
+          setState(() {
+            selectedAlbums.clear();
+          });
+        },
+      ),
+    ];
+
+    if (Provider.of<AudioPlayerService>(context, listen: false).isPlaying) {
+      appBarActions.insert(
+          1,
+          IconButton(
+            icon: const Icon(Icons.playlist_add_rounded),
+            onPressed: () {
+              Map<String, AlbumInfo> albums =
+                  Provider.of<JellyfinAPI>(context, listen: false)
+                      .detailedAlbumInfos!;
+
+              List<AudioMetadata> songsList = [];
+
+              for (String index in selectedAlbums) {
+                for (SongInfo song in albums[index]!.songs) {
+                  songsList.add(AudioMetadata(
+                    id: song.id,
+                    albumId: song.albumId,
+                    title: song.title,
+                    artists: song.artists,
+                    primaryImageTag: song.primaryImageTag,
+                  ));
+                }
+              }
+
+              Provider.of<AudioPlayerService>(context, listen: false)
+                  .addToQueue(songsList, context);
+
+              setState(() {
+                selectedAlbums.clear();
+              });
+            },
+          ));
+    }
+
     return AppBar(
       title: Text('${selectedAlbums.length} selected'),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.play_arrow_rounded),
-          tooltip: 'Play selected albums',
-          onPressed: () {
-            Map<String, AlbumInfo> albums =
-                Provider.of<JellyfinAPI>(context, listen: false)
-                    .detailedAlbumInfos!;
-
-            List<AudioMetadata> songsList = [];
-
-            for (String index in selectedAlbums) {
-              for (SongInfo song in albums[index]!.songs) {
-                songsList.add(AudioMetadata(
-                  id: song.id,
-                  albumId: song.albumId,
-                  title: song.title,
-                  artists: song.artists,
-                  primaryImageTag: song.primaryImageTag,
-                ));
-              }
-            }
-
-            Provider.of<AudioPlayerService>(context, listen: false)
-                .playList(songsList, context);
-            setState(() {
-              selectedAlbums.clear();
-            });
-          },
-        ),
-      ],
+      actions: appBarActions,
     );
   }
 
@@ -163,17 +207,27 @@ class _AlbumsListState extends State<AlbumsList> {
         final albumInfo = albumInfos[index];
         return ListTile(
           onTap: () {
-            setState(() {
-              selectedAlbums.clear();
-            });
-            Navigator.pushNamed(
-              context,
-              '/albums/item',
-              arguments: AlbumArguments(
-                albumInfo.id,
-                albumInfo.title,
-              ),
-            );
+            if (selectedAlbums.isNotEmpty) {
+              setState(() {
+                if (selectedAlbums.contains(albumInfo.id)) {
+                  selectedAlbums.remove(albumInfo.id);
+                } else {
+                  selectedAlbums.add(albumInfo.id);
+                }
+              });
+            } else {
+              setState(() {
+                selectedAlbums.clear();
+              });
+              Navigator.pushNamed(
+                context,
+                '/albums/item',
+                arguments: AlbumArguments(
+                  albumInfo.id,
+                  albumInfo.title,
+                ),
+              );
+            }
           },
           onLongPress: () {
             setState(() {
@@ -232,17 +286,27 @@ class _AlbumsListState extends State<AlbumsList> {
         final albumInfo = albumInfos[index];
         return InkResponse(
           onTap: () {
-            setState(() {
-              selectedAlbums.clear();
-            });
-            Navigator.pushNamed(
-              context,
-              '/albums/item',
-              arguments: AlbumArguments(
-                albumInfo.id,
-                albumInfo.title,
-              ),
-            );
+            if (selectedAlbums.isNotEmpty) {
+              setState(() {
+                if (selectedAlbums.contains(albumInfo.id)) {
+                  selectedAlbums.remove(albumInfo.id);
+                } else {
+                  selectedAlbums.add(albumInfo.id);
+                }
+              });
+            } else {
+              setState(() {
+                selectedAlbums.clear();
+              });
+              Navigator.pushNamed(
+                context,
+                '/albums/item',
+                arguments: AlbumArguments(
+                  albumInfo.id,
+                  albumInfo.title,
+                ),
+              );
+            }
           },
           onLongPress: () {
             setState(() {
@@ -253,14 +317,19 @@ class _AlbumsListState extends State<AlbumsList> {
               }
             });
           },
-          child: GridTile(
-            child: AspectRatio(
-              aspectRatio: 1 / 1,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(24.0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24.0),
+            child: GridTile(
+              child: AspectRatio(
+                aspectRatio: 1 / 1,
                 child: Stack(
                   alignment: Alignment.bottomCenter,
-                  children: _albumsGridStackBuilder(context, albumInfo, index),
+                  children: _albumsGridStackBuilder(
+                    context,
+                    albumInfo,
+                    index,
+                    selectedAlbums.contains(albumInfo.id),
+                  ),
                 ),
               ),
             ),
@@ -271,13 +340,20 @@ class _AlbumsListState extends State<AlbumsList> {
   }
 
   List<Widget> _albumsGridStackBuilder(
-      BuildContext context, AlbumInfo albumInfo, int index) {
+      BuildContext context, AlbumInfo albumInfo, int index, bool selected) {
     List<Widget> results = [
-      AspectRatio(
-        aspectRatio: 1 / 1,
-        child: Provider.of<JellyfinAPI>(context).imageIfTagExists(
-          primaryImageTag: albumInfo.primaryImageTag,
-          itemId: albumInfo.id,
+      Container(
+        foregroundDecoration: selectedAlbums.contains(albumInfo.id)
+            ? const BoxDecoration(
+                color: Colors.black54,
+              )
+            : null,
+        child: AspectRatio(
+          aspectRatio: 1 / 1,
+          child: Provider.of<JellyfinAPI>(context).imageIfTagExists(
+            primaryImageTag: albumInfo.primaryImageTag,
+            itemId: albumInfo.id,
+          ),
         ),
       ),
       Container(

@@ -58,7 +58,9 @@ class JustAudioPlayer implements AudioPlayerService {
   }
 
   @override
-  Stream<bool> get isPlaying => _audioPlayer.playingStream;
+  Stream<bool> get isPlayingStream => _audioPlayer.playingStream;
+  @override
+  bool get isPlaying => _audioPlayer.playing;
   @override
   Stream<bool> get isShuffle => _audioPlayer.shuffleModeEnabledStream;
   @override
