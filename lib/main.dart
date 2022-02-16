@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-//
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -10,7 +9,6 @@ import 'package:jellyamp/screens/root.dart';
 import 'package:jellyamp/audio/just_audio_player.dart';
 import 'package:jellyamp/audio/audio_player_service.dart';
 import 'package:jellyamp/api/jellyfin.dart';
-import 'package:jellyamp/env.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(
@@ -34,12 +32,7 @@ class MainApp extends StatelessWidget {
           dispose: (_, value) => (value as JustAudioPlayer).dispose(),
         ),
         Provider<JellyfinAPI>(
-          create: (_) => JellyfinAPI(
-            mediaBrowserToken: envMediaBrowserToken,
-            jellyfinUrl: envJellyfinUrl,
-            userId: envUserId,
-            libraryId: envLibraryId,
-          ),
+          create: (_) => JellyfinAPI(),
         ),
       ],
       child: const MaterialApp(
