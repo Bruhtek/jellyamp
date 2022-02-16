@@ -13,6 +13,7 @@ class SongInfo {
   //primaryImage from album, since song doesn't have one
   String? primaryImageTag;
   int trackNumber;
+  bool isFavorite;
 
   SongInfo({
     required this.id,
@@ -21,6 +22,7 @@ class SongInfo {
     required this.trackNumber,
     this.artists,
     this.primaryImageTag,
+    this.isFavorite = false,
   });
 
   factory SongInfo.fromJson(Map<String, dynamic> json) {
@@ -37,6 +39,7 @@ class SongInfo {
       trackNumber: (json['IndexNumber'] ?? 0) as int,
       artists: artists,
       primaryImageTag: json['AlbumPrimaryImageTag'] as String?,
+      isFavorite: json['UserData']['IsFavorite'] as bool,
     );
   }
 }
@@ -47,6 +50,7 @@ class AlbumInfo {
   List<String>? artists;
   List<SongInfo> songs;
   String? primaryImageTag;
+  bool isFavorite;
 
   AlbumInfo({
     required this.id,
@@ -54,6 +58,7 @@ class AlbumInfo {
     this.artists,
     required this.songs,
     this.primaryImageTag,
+    this.isFavorite = false,
   });
 
   factory AlbumInfo.fromJsonNoSongs(Map<String, dynamic> json) {
@@ -69,6 +74,7 @@ class AlbumInfo {
       artists: albumArtists,
       songs: [],
       primaryImageTag: json['ImageTags']['Primary'] as String?,
+      isFavorite: json['UserData']['IsFavorite'] as bool,
     );
   }
 }

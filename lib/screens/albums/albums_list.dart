@@ -206,6 +206,7 @@ class _AlbumsListState extends State<AlbumsList> {
       itemBuilder: (context, index) {
         final albumInfo = albumInfos[index];
         return ListTile(
+          selected: selectedAlbums.contains(albumInfo.id),
           onTap: () {
             if (selectedAlbums.isNotEmpty) {
               setState(() {
@@ -262,9 +263,8 @@ class _AlbumsListState extends State<AlbumsList> {
                   overflow: TextOverflow.ellipsis,
                 )
               : null,
-          trailing: selectedAlbums.contains(albumInfo.id)
-              ? const Icon(Icons.check_circle_rounded)
-              : null,
+          trailing:
+              albumInfo.isFavorite ? const Icon(Icons.favorite_rounded) : null,
         );
       },
     );
@@ -328,7 +328,6 @@ class _AlbumsListState extends State<AlbumsList> {
                     context,
                     albumInfo,
                     index,
-                    selectedAlbums.contains(albumInfo.id),
                   ),
                 ),
               ),
@@ -340,7 +339,7 @@ class _AlbumsListState extends State<AlbumsList> {
   }
 
   List<Widget> _albumsGridStackBuilder(
-      BuildContext context, AlbumInfo albumInfo, int index, bool selected) {
+      BuildContext context, AlbumInfo albumInfo, int index) {
     List<Widget> results = [
       Container(
         foregroundDecoration: selectedAlbums.contains(albumInfo.id)
@@ -409,7 +408,38 @@ class _AlbumsListState extends State<AlbumsList> {
                   color: Colors.black87,
                 ),
               ),
-              const Icon(Icons.check_circle_rounded, color: Colors.white),
+              const Icon(
+                Icons.check_circle_rounded,
+                color: Colors.white,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    if (albumInfo.isFavorite) {
+      results.add(
+        Positioned(
+          top: 0,
+          left: 0,
+          width: 32,
+          child: Stack(
+            alignment: AlignmentDirectional.center,
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  bottomRight: Radius.circular(16.0),
+                ),
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  color: Colors.black87,
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 2, left: 2),
+                child: const Icon(Icons.favorite_rounded, color: Colors.white),
+              ),
             ],
           ),
         ),

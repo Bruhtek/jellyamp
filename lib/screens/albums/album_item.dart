@@ -119,6 +119,9 @@ class _AlbumItemState extends State<AlbumItem> {
                                 overflow: TextOverflow.ellipsis,
                               )
                             : null,
+                        trailing: songInfo.isFavorite
+                            ? const Icon(Icons.favorite_rounded)
+                            : null,
                         onTap: () {
                           Provider.of<AudioPlayerService>(context,
                                   listen: false)
