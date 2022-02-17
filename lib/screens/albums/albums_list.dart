@@ -177,6 +177,7 @@ class _AlbumsListState extends State<AlbumsList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Provider.of<ColorScheme>(context).surface,
       appBar: _appBar(),
       body: FutureBuilder<List<AlbumInfo>>(
         future: albumInfos,

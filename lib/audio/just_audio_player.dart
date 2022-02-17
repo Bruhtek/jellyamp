@@ -4,6 +4,7 @@ import 'package:jellyamp/audio/audio_player_service.dart';
 import 'package:jellyamp/classes/audio.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
+import 'package:jellyamp/api/UriFromFileOrUrl.dart';
 
 class JustAudioPlayer implements AudioPlayerService {
   final AudioPlayer _audioPlayer = AudioPlayer();

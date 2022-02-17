@@ -109,7 +109,7 @@ class MiniPlayer extends StatelessWidget {
         Provider.of<AudioPlayerService>(context);
 
     return Container(
-      color: Colors.white,
+      color: Provider.of<ColorScheme>(context).surface,
       child: StreamBuilder3<Duration, SequenceState?, Duration?>(
           streams: Tuple3(
             audioPlayerService.positionStream,

@@ -42,21 +42,25 @@ class PlayerButtons extends StatelessWidget {
     }
   }
 
-  Widget _shuffleButton(bool enabled, AudioPlayerService audioPlayerService) {
+  Widget _shuffleButton(bool enabled, AudioPlayerService audioPlayerService,
+      BuildContext context) {
     return IconButton(
       icon: !enabled
           ? const Icon(Icons.shuffle_rounded)
-          : const Icon(Icons.shuffle_rounded, color: Colors.blueAccent),
+          : Icon(Icons.shuffle_rounded,
+              color: Provider.of<ColorScheme>(context).primary),
       onPressed: () => audioPlayerService.setShuffle(!enabled),
     );
   }
 
-  Widget _loopButton(
-      QueueLoopMode loopMode, AudioPlayerService audioPlayerService) {
+  Widget _loopButton(QueueLoopMode loopMode,
+      AudioPlayerService audioPlayerService, BuildContext context) {
     final icons = [
       const Icon(Icons.repeat_rounded),
-      const Icon(Icons.repeat_rounded, color: Colors.blueAccent),
-      const Icon(Icons.repeat_one_rounded, color: Colors.blueAccent),
+      Icon(Icons.repeat_rounded,
+          color: Provider.of<ColorScheme>(context).primary),
+      Icon(Icons.repeat_one_rounded,
+          color: Provider.of<ColorScheme>(context).primary),
     ];
     const cycleModes = [
       QueueLoopMode.off,
@@ -101,7 +105,8 @@ class PlayerButtons extends StatelessWidget {
           stream: audioPlayerService.isShuffle,
           builder: (_, snapshot) {
             if (snapshot.hasData) {
-              return _shuffleButton(snapshot.data!, audioPlayerService);
+              return _shuffleButton(
+                  snapshot.data!, audioPlayerService, context);
             }
             return const CircularProgressIndicator();
           },
@@ -127,7 +132,7 @@ class PlayerButtons extends StatelessWidget {
           stream: audioPlayerService.loopMode,
           builder: (_, snapshot) {
             if (snapshot.hasData) {
-              return _loopButton(snapshot.data!, audioPlayerService);
+              return _loopButton(snapshot.data!, audioPlayerService, context);
             }
             return const CircularProgressIndicator();
           },

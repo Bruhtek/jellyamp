@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
@@ -10,13 +11,16 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Settings'),
+        ),
+        body: const Center(
+          child: Text('Settings'),
+        ),
       ),
-      body: const Center(
-        child: Text('Settings'),
-      ),
+      theme: ThemeData.from(colorScheme: Provider.of<ColorScheme>(context)),
     );
   }
 }

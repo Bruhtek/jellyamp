@@ -4,6 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
+//theming
+import 'package:dynamic_color/dynamic_color.dart';
+import 'package:material_color_utilities/material_color_utilities.dart';
+import 'package:jellyamp/classes/colorscheme.dart';
+
 // jellyamp packages
 import 'package:jellyamp/screens/root.dart';
 import 'package:jellyamp/audio/just_audio_player.dart';
@@ -35,9 +40,26 @@ class MainApp extends StatelessWidget {
           create: (_) => JellyfinAPI(),
         ),
       ],
-      child: const MaterialApp(
-        title: 'Jellyamp',
-        home: Root(),
+      child: DynamicColorBuilder(
+        builder: (CorePalette? corePalette) {
+          ColorScheme scheme;
+
+          if (corePalette != null) {
+            scheme = ColorSchemeGenerator.generate(corePalette, true);
+          } else {
+            scheme = const ColorScheme.dark();
+          }
+          return Provider<ColorScheme>(
+            create: (_) => scheme,
+            child: MaterialApp(
+              title: 'Jellyamp',
+              home: const Root(),
+              theme: ThemeData.from(
+                colorScheme: scheme,
+              ),
+            ),
+          );
+        },
       ),
     );
   }
