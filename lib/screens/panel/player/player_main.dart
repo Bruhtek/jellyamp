@@ -34,8 +34,8 @@ class PlayerMain extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(48.0),
                   child: Provider.of<JellyfinAPI>(context).imageIfTagExists(
-                    primaryImageTag: currentItemTag.primaryImageTag,
-                    itemId: currentItemTag.albumId,
+                    primaryImageTag: currentItemTag.extras['primaryImageTag'],
+                    itemId: currentItemTag.extras['albumId'],
                     alternative: const Icon(
                       Icons.music_note_rounded,
                       size: 50,
@@ -62,7 +62,7 @@ class PlayerMain extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           Text(
-            currentItemTag.artists.join(", "),
+            currentItemTag.extras['artists'].join(", "),
             style: Theme.of(context).textTheme.subtitle1,
             textAlign: TextAlign.center,
           ),

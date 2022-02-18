@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:jellyamp/api/jellyfin.dart';
 import 'package:jellyamp/classes/audio.dart';
 import 'package:just_audio/just_audio.dart';
@@ -16,7 +17,7 @@ Future<File> fileSong(String filename) async {
 
 // Add back the null check for the file
 Future<AudioSource?> urlOrFileSave(
-    AudioMetadata metadata, JellyfinAPI jellyfinAPI) async {
+    MediaItem metadata, JellyfinAPI jellyfinAPI) async {
   String url = "${jellyfinAPI.reqBaseUrl}/Items/${metadata.id}/Download";
   await fileSong(metadata.id);
 

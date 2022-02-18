@@ -66,7 +66,7 @@ class MiniPlayer extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(24.0),
                     child: Provider.of<JellyfinAPI>(context).imageIfTagExists(
-                      primaryImageTag: songInfo.primaryImageTag,
+                      primaryImageTag: songInfo.extras['primaryImageTag'],
                       itemId: songInfo.id,
                       fit: BoxFit.cover,
                     ),
@@ -84,7 +84,7 @@ class MiniPlayer extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
                                 textAlign: TextAlign.left),
-                            Text(songInfo.artists.join(", "),
+                            Text(songInfo.extras['artists'].join(", "),
                                 style: Theme.of(context).textTheme.subtitle1,
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,

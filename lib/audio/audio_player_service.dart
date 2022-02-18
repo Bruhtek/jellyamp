@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:jellyamp/classes/audio.dart';
 import 'package:just_audio/just_audio.dart';
@@ -45,6 +46,6 @@ abstract class AudioPlayerService {
   Future<void> seekToIndex(int index);
   Future<void> seek(int seconds);
 
-  void playList(List<AudioMetadata> items, BuildContext context);
-  void addToQueue(List<AudioMetadata> items, BuildContext context);
+  void playList(List<MediaItem> items, BuildContext context);
+  void addToQueue(List<MediaItem> items, BuildContext context);
 }

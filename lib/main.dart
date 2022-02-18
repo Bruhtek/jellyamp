@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 
 //theming
 import 'package:dynamic_color/dynamic_color.dart';
@@ -15,9 +16,18 @@ import 'package:jellyamp/audio/just_audio_player.dart';
 import 'package:jellyamp/audio/audio_player_service.dart';
 import 'package:jellyamp/api/jellyfin.dart';
 
-void main() {
+void main() async {
   SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'com.bruhtek.jellyamp.channel.audio',
+    androidNotificationChannelName: 'Jellyamp Playback',
+    androidNotificationOngoing: false,
+    androidResumeOnClick: true,
+    androidNotificationClickStartsActivity: true,
+    preloadArtwork: true,
+  );
 
   runApp(const MainApp());
 }
@@ -54,9 +64,10 @@ class MainApp extends StatelessWidget {
             child: MaterialApp(
               title: 'Jellyamp',
               home: const Root(),
-              theme: ThemeData.from(
+              darkTheme: ThemeData.from(
                 colorScheme: scheme,
               ),
+              themeMode: ThemeMode.dark,
             ),
           );
         },
