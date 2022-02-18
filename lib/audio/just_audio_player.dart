@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart' hide AudioProcessingState;
 import 'package:flutter/cupertino.dart';
 import 'package:jellyamp/api/jellyfin.dart';
 import 'package:jellyamp/audio/audio_player_service.dart';
@@ -11,16 +12,26 @@ class JustAudioPlayer implements AudioPlayerService {
   ConcatenatingAudioSource? concatenatingAudioSource;
 
   @override
-  void playList(List<AudioMetadata> songList, BuildContext context) async {
+  void playList(List<MediaItem> songList, BuildContext context) async {
     List<UriAudioSource> uriAudioSourceList = [];
 
     JellyfinAPI jellyfinAPI = Provider.of<JellyfinAPI>(context, listen: false);
 
-    for (AudioMetadata song in songList) {
+    for (MediaItem song in songList) {
       uriAudioSourceList.add(AudioSource.uri(
         Uri.parse("${jellyfinAPI.reqBaseUrl}/Items/${song.id}/Download"),
         headers: jellyfinAPI.reqHeaders,
-        tag: song,
+        tag: MediaItem(
+          id: song.id,
+          title: song.title,
+          artist: song.extras!['artists']?.join(', '),
+          artUri:
+              Provider.of<JellyfinAPI>(context, listen: false).uriIfTagExists(
+            primaryImageTag: song.extras!['primaryImageTag'],
+            itemId: song.id,
+          ),
+          extras: song.extras,
+        ),
       ));
     }
 
@@ -40,19 +51,29 @@ class JustAudioPlayer implements AudioPlayerService {
   }
 
   @override
-  void addToQueue(List<AudioMetadata> items, BuildContext context) async {
+  void addToQueue(List<MediaItem> items, BuildContext context) async {
     if (concatenatingAudioSource == null) {
       return playList(items, context);
     }
 
     JellyfinAPI jellyfinAPI = Provider.of<JellyfinAPI>(context, listen: false);
 
-    for (var item in items) {
+    for (var song in items) {
       await concatenatingAudioSource!.add(
         AudioSource.uri(
-          Uri.parse("${jellyfinAPI.reqBaseUrl}/Items/${item.id}/Download"),
+          Uri.parse("${jellyfinAPI.reqBaseUrl}/Items/${song.id}/Download"),
           headers: jellyfinAPI.reqHeaders,
-          tag: item,
+          tag: MediaItem(
+            id: song.id,
+            title: song.title,
+            artist: song.extras!['artists']?.join(', '),
+            artUri:
+                Provider.of<JellyfinAPI>(context, listen: false).uriIfTagExists(
+              primaryImageTag: song.extras!['primaryImageTag'],
+              itemId: song.id,
+            ),
+            extras: song.extras,
+          ),
         ),
       );
     }

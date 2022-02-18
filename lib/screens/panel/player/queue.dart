@@ -30,8 +30,9 @@ class Queue extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16.0),
                     child: Provider.of<JellyfinAPI>(context).imageIfTagExists(
-                      primaryImageTag: sequence[index].tag.primaryImageTag,
-                      itemId: sequence[index].tag.albumId,
+                      primaryImageTag:
+                          sequence[index].tag.extras['primaryImageTag'],
+                      itemId: sequence[index].tag.extras['albumId'],
                       alternative: const Icon(
                         Icons.music_note_rounded,
                         size: 50,
@@ -45,7 +46,7 @@ class Queue extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 subtitle: Text(
-                  sequence[index].tag.artists.join(', '),
+                  sequence[index].tag.extras['artists'].join(', '),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -79,12 +80,17 @@ class _AlbumItemState extends State<AlbumItem> {
                                       listen: false)
                                   .addToQueue(
                                 [
-                                  AudioMetadata(
+                                  MediaItem(
                                     id: songInfo.id,
-                                    albumId: albumInfos.id,
                                     title: songInfo.title,
-                                    primaryImageTag: songInfo.primaryImageTag,
-                                    artists: songInfo.artists,
+                                    extras: {
+                                      "id": songInfo.id,
+                                      "albumId": albumInfos.id,
+                                      "title": songInfo.title,
+                                      "primaryImageTag":
+                                          songInfo.primaryImageTag,
+                                      "artists": songInfo.artists,
+                                    },
                                   )
                                 ],
                                 context,
@@ -127,12 +133,16 @@ class _AlbumItemState extends State<AlbumItem> {
                                   listen: false)
                               .playList(
                             [
-                              AudioMetadata(
+                              MediaItem(
                                 id: songInfo.id,
-                                albumId: albumInfos.id,
                                 title: songInfo.title,
-                                primaryImageTag: songInfo.primaryImageTag,
-                                artists: songInfo.artists,
+                                extras: {
+                                  "id": songInfo.id,
+                                  "albumId": albumInfos.id,
+                                  "title": songInfo.title,
+                                  "primaryImageTag": songInfo.primaryImageTag,
+                                  "artists": songInfo.artists,
+                                },
                               )
                             ],
                             context,

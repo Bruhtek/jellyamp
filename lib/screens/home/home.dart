@@ -14,6 +14,7 @@ class _HomeState extends State<Home> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
+          elevation: 0.0,
           title: const Text('Home'),
         ),
         body: const Center(

@@ -14,6 +14,7 @@ class _SettingsState extends State<Settings> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
+          elevation: 0.0,
           title: const Text('Settings'),
         ),
         body: const Center(

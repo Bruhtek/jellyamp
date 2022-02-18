@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:jellyamp/api/jellyfin.dart';
 import 'package:jellyamp/audio/audio_player_service.dart';
@@ -73,6 +74,7 @@ class _AlbumsListState extends State<AlbumsList> {
   AppBar _appBar() {
     if (selectedAlbums.isEmpty) {
       return AppBar(
+        elevation: 0.0,
         title: const Text('Albums'),
         actions: [
           popupViewtype(),
@@ -96,16 +98,20 @@ class _AlbumsListState extends State<AlbumsList> {
               Provider.of<JellyfinAPI>(context, listen: false)
                   .detailedAlbumInfos!;
 
-          List<AudioMetadata> songsList = [];
+          List<MediaItem> songsList = [];
 
           for (String index in selectedAlbums) {
             for (SongInfo song in albums[index]!.songs) {
-              songsList.add(AudioMetadata(
+              songsList.add(MediaItem(
                 id: song.id,
-                albumId: song.albumId,
                 title: song.title,
-                artists: song.artists,
-                primaryImageTag: song.primaryImageTag,
+                extras: {
+                  "id": song.id,
+                  "albumId": song.albumId,
+                  "title": song.title,
+                  "primaryImageTag": song.primaryImageTag,
+                  "artists": song.artists,
+                },
               ));
             }
           }
@@ -130,16 +136,20 @@ class _AlbumsListState extends State<AlbumsList> {
                   Provider.of<JellyfinAPI>(context, listen: false)
                       .detailedAlbumInfos!;
 
-              List<AudioMetadata> songsList = [];
+              List<MediaItem> songsList = [];
 
               for (String index in selectedAlbums) {
                 for (SongInfo song in albums[index]!.songs) {
-                  songsList.add(AudioMetadata(
+                  songsList.add(MediaItem(
                     id: song.id,
-                    albumId: song.albumId,
                     title: song.title,
-                    artists: song.artists,
-                    primaryImageTag: song.primaryImageTag,
+                    extras: {
+                      "id": song.id,
+                      "albumId": song.albumId,
+                      "title": song.title,
+                      "primaryImageTag": song.primaryImageTag,
+                      "artists": song.artists,
+                    },
                   ));
                 }
               }
@@ -276,8 +286,8 @@ class _AlbumsListState extends State<AlbumsList> {
       padding: const EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 200),
       shrinkWrap: true,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        mainAxisSpacing: 4,
-        crossAxisSpacing: 4,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
         crossAxisCount: 3,
         childAspectRatio: 1.0,
         //mainAxisExtent: 130,

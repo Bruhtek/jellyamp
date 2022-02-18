@@ -1,3 +1,5 @@
+import 'package:audio_service/audio_service.dart';
+
 class AlbumArguments {
   final String albumId;
   final String albumName;
@@ -79,7 +81,7 @@ class AlbumInfo {
   }
 }
 
-class AudioMetadata {
+/*class AudioMetadata {
   final String id;
   final String albumId;
   final String title;
@@ -93,4 +95,4 @@ class AudioMetadata {
     this.primaryImageTag,
     this.artists,
   });
-}
+}*/

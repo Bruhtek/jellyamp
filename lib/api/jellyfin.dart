@@ -295,6 +295,22 @@ class JellyfinAPI implements APIService {
     );
   }
 
+  Uri? uriIfTagExists({
+    required String? primaryImageTag,
+    required String itemId,
+    int maxWidth = 256,
+    int maxHeight = 256,
+  }) {
+    if (primaryImageTag == null) {
+      return null;
+    }
+
+    final String url =
+        '$reqBaseUrl/Items/$itemId/Images/Primary?tag=$primaryImageTag?maxWidth=$maxWidth&maxHeight=$maxHeight';
+
+    return Uri.parse(url);
+  }
+
   Widget imageIfTagExists({
     required String? primaryImageTag,
     required String itemId,
