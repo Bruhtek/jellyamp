@@ -4,7 +4,7 @@ import 'package:jellyamp/audio/audio_player_service.dart';
 import 'package:jellyamp/classes/audio.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
-import 'package:jellyamp/api/UriFromFileOrUrl.dart';
+import 'package:jellyamp/api/uri_from_file_or_url.dart';
 
 class JustAudioPlayer implements AudioPlayerService {
   final AudioPlayer _audioPlayer = AudioPlayer();
@@ -78,6 +78,9 @@ class JustAudioPlayer implements AudioPlayerService {
       _audioPlayer.sequenceStateStream;
   @override
   Stream<Duration?> get durationStream => _audioPlayer.durationStream;
+  @override
+  Stream<PlaybackEvent> get playbackEventStream =>
+      _audioPlayer.playbackEventStream;
 
   @override
   bool get hasPrevious => _audioPlayer.hasPrevious;

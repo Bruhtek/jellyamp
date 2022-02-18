@@ -25,6 +25,7 @@ abstract class AudioPlayerService {
   Stream<Duration> get positionStream;
   Stream<SequenceState?> get sequenceStateStream;
   Stream<Duration?> get durationStream;
+  Stream<PlaybackEvent> get playbackEventStream;
 
   Stream<AudioProcessingState> get audioProcessingStateStream;
   Stream<QueueLoopMode> get loopMode;

@@ -33,7 +33,7 @@ class _PlayerState extends State<Player> {
               ),
             ),
           ),
-          const PlayerButtons(),
+          const PlayerControls(),
         ],
       ),
     );

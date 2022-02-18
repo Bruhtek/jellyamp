@@ -1,7 +1,6 @@
 // Class to generate the color scheme from a color palette
 
 import 'package:flutter/material.dart';
-import 'package:dynamic_color/dynamic_color.dart';
 import 'package:material_color_utilities/material_color_utilities.dart';
 
 abstract class ColorSchemeGenerator {

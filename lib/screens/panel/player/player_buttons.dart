@@ -5,8 +5,8 @@ import 'package:just_audio/just_audio.dart';
 
 import 'package:provider/provider.dart';
 
-class PlayerButtons extends StatelessWidget {
-  const PlayerButtons({Key? key}) : super(key: key);
+class PlayerControls extends StatelessWidget {
+  const PlayerControls({Key? key}) : super(key: key);
 
   Widget _playPauseButton(
       AudioProcessingState state, AudioPlayerService audioPlayerService) {
@@ -97,7 +97,6 @@ class PlayerButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     AudioPlayerService audioPlayerService =
         Provider.of<AudioPlayerService>(context);
-
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
