@@ -25,6 +25,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
+
 android {
     compileSdkVersion flutter.compileSdkVersion
 
@@ -42,12 +43,12 @@ android {
     }
 
     defaultConfig {
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.bruhtek.jellyamp"
-        minSdkVersion 23
-        targetSdkVersion 31
-        versionCode 11
-        versionName "0.1.1-alpha"
-		multiDexEnabled true
+        minSdkVersion 22
+        targetSdkVersion 30
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
     }
 
     buildTypes {
@@ -65,6 +66,4 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-	implementation 'com.google.android.material:material:1.5.0'
-	implementation "androidx.multidex:multidex:2.0.1"
 }

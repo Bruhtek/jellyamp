@@ -1,20 +1,22 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:network_to_file_image/network_to_file_image.dart';
-import 'package:transparent_image/transparent_image.dart';
-
-import 'package:jellyamp/classes/audio.dart';
-import 'package:jellyamp/api/api_service.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class JellyfinAPI implements APIService {
-  @override
-  Map<String, AlbumInfo>? detailedAlbumInfos;
+enum SortType {
+  albumName,
+  albumNameDesc,
+  albumArtist,
+  albumArtistDesc,
+}
 
+class JellyfinAPI extends ChangeNotifier {
   //    ______ _   ___      __
   //   |  ____| \ | \ \    / /
   //   | |__  |  \| |\ \  / /
@@ -23,22 +25,57 @@ class JellyfinAPI implements APIService {
   //   |______|_| \_|   \/
   //
 
+  void notify() {
+    notifyListeners();
+  }
+
   late String _mediaBrowserToken;
   late String _jellyfinUrl;
   late String _userId;
 
-  JellyfinAPI({
-    mediaBrowserToken,
-    jellyfinUrl,
-    userId,
-  }) {
-    _mediaBrowserToken = mediaBrowserToken ?? '';
-    _jellyfinUrl = jellyfinUrl ?? '';
-    _userId = userId ?? '';
+  JellyfinAPI() {
+    _mediaBrowserToken = '';
+    _jellyfinUrl = '';
+    _userId = '';
+
+    _initialize();
   }
 
-  @override
-  Future<bool> correctServerUrl(String url) async {
+  bool loggedIn = false;
+  bool wrongAuth = false;
+  bool initialized = false;
+
+  void _initialize() async {
+    bool settingsReadCorrectly = _readEnvFromDisk();
+    if (settingsReadCorrectly) {
+      bool authenticated = await _checkAuthenticated();
+      if (authenticated) {
+        loggedIn = true;
+      } else {
+        wrongAuth = true;
+      }
+    }
+
+    initialized = true;
+    notify();
+  }
+
+  Future<bool> _checkAuthenticated() async {
+    final uri = Uri.parse("$_jellyfinUrl/Users/Me");
+
+    final response = await http.get(
+      uri,
+      headers: reqHeaders,
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    }
+
+    return false;
+  }
+
+  Future<bool> checkServerUrl(String url) async {
     if (_isUrlValid(url)) {
       try {
         final response = await http.get(Uri.parse('$url/System/Info/Public'));
@@ -67,28 +104,80 @@ class JellyfinAPI implements APIService {
     return uri != null && uri.hasAbsolutePath && uri.scheme.startsWith('http');
   }
 
-  void setJellyfinUrl(String url) {
-    _jellyfinUrl = url;
+  Future<bool> login(String username, String password, String url) async {
+    if (_isUrlValid(url)) {
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+      final uri = Uri.parse("$url/Users/AuthenticateByName");
+
+      final headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-Emby-Authorization":
+            'MediaBrowser Client="Android", Device="${androidInfo.model}", DeviceId="${androidInfo.androidId}", Version="${packageInfo.version}"',
+      };
+
+      final response = await http.post(
+        uri,
+        headers: headers,
+        body: jsonEncode({
+          "Username": username,
+          "Pw": password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        _userId = json['User']['Id'];
+        _mediaBrowserToken = json['AccessToken'];
+        _jellyfinUrl = url;
+
+        _saveEnvToDisk();
+
+        _initialize();
+        return true;
+      }
+    }
+
+    _initialize();
+    return false;
   }
 
-  void setToken(String token) {
-    _mediaBrowserToken = token;
-  }
-
-  void setUserId(String userId) {
-    _userId = userId;
-  }
-
-  Future<void> saveEnvToDisk() async {
-    var envBox = await Hive.openBox('env');
+  void _saveEnvToDisk() {
+    var envBox = Hive.box('encrypted');
 
     envBox.put("mediaBrowserToken", _mediaBrowserToken);
     envBox.put("userId", _userId);
     envBox.put("jellyfinUrl", _jellyfinUrl);
   }
 
-  bool get allInfoFilled =>
-      _mediaBrowserToken != '' && _jellyfinUrl != '' && _userId != '';
+  /// Reads the environment variables from disk.
+  /// Returns true if all the environment variables were read successfully.
+  bool _readEnvFromDisk() {
+    var envBox = Hive.box('encrypted');
+
+    if (envBox.keys.contains('mediaBrowserToken')) {
+      _mediaBrowserToken = envBox.get('mediaBrowserToken');
+    } else {
+      return false;
+    }
+
+    if (envBox.keys.contains('userId')) {
+      _userId = envBox.get('userId');
+    } else {
+      return false;
+    }
+
+    if (envBox.keys.contains('jellyfinUrl')) {
+      _jellyfinUrl = envBox.get('jellyfinUrl');
+    } else {
+      return false;
+    }
+
+    return true;
+  }
 
   String get reqBaseUrl => _jellyfinUrl;
   Map<String, String> get reqHeaders =>
@@ -102,171 +191,6 @@ class JellyfinAPI implements APIService {
   //   /_/    \_\__,_|\__,_|_|\___/
   //
 
-  @override
-  SortType sortType = SortType.albumArtist;
-
-  @override
-  Future<Map<String, AlbumInfo>> fetchAlbums() async {
-    if (detailedAlbumInfos == null) {
-      Map<String, AlbumInfo> albums = {};
-
-      var responseAlbums = await http.get(
-          Uri.parse(
-              '$reqBaseUrl/Users/$_userId/Items?includeItemTypes=MusicAlbum&recursive=true'),
-          headers: reqHeaders);
-
-      if (responseAlbums.statusCode == 200) {
-        final int albumCount =
-            jsonDecode(responseAlbums.body)['TotalRecordCount'];
-
-        for (int i = 0; i < albumCount; i++) {
-          AlbumInfo temp = AlbumInfo.fromJsonNoSongs(
-              jsonDecode(responseAlbums.body)['Items'][i]);
-          albums[temp.id] = temp;
-        }
-
-        var responseSongs = await http.get(
-            Uri.parse(
-                '$reqBaseUrl/Users/$_userId/Items?includeItemTypes=Audio&recursive=true'),
-            headers: reqHeaders);
-
-        if (responseSongs.statusCode == 200) {
-          final int songCount =
-              jsonDecode(responseSongs.body)['TotalRecordCount'];
-
-          for (int i = 0; i < songCount; i++) {
-            SongInfo temp =
-                SongInfo.fromJson(jsonDecode(responseSongs.body)['Items'][i]);
-            albums[temp.albumId]!.songs.add(temp);
-          }
-
-          for (AlbumInfo albumInfo in albums.values) {
-            albumInfo.songs
-                .sort((a, b) => a.trackNumber.compareTo(b.trackNumber));
-          }
-        }
-
-        detailedAlbumInfos = albums;
-      } else {
-        throw Exception("Failed to fetch albums!");
-      }
-
-      return albums;
-    } else {
-      return detailedAlbumInfos!;
-    }
-  }
-
-  @override
-  Future<AlbumInfo> fetchAlbumSongs(String albumId) async {
-    AlbumInfo? albumInfo = detailedAlbumInfos?[albumId];
-
-    if (albumInfo != null && albumInfo.songs.isNotEmpty) {
-      return albumInfo;
-    }
-
-    // a little on the paranoid side, since we already have the album info in 99% of the cases
-    if (albumInfo == null) {
-      final albumInfoUrl = '$reqBaseUrl/Users/$_userId/Items?ids=$albumId';
-
-      final response = await http.get(
-        Uri.parse(albumInfoUrl),
-        headers: reqHeaders,
-      );
-
-      if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-        albumInfo = AlbumInfo.fromJsonNoSongs(json['Items'][0]);
-      } else {
-        throw Exception("Failed to fetch album info!");
-      }
-    }
-
-    List<SongInfo> songs = [];
-    final String songsInfoUrl =
-        '$reqBaseUrl/Users/$_userId/Items?parentId=$albumId&includeItemTypes=Audio&recursive=true';
-
-    final response = await http.get(
-      Uri.parse(songsInfoUrl),
-      headers: reqHeaders,
-    );
-    if (response.statusCode == 200) {
-      final json = jsonDecode(response.body);
-
-      for (var song in json['Items']) {
-        songs.add(SongInfo.fromJson(song));
-      }
-
-      albumInfo.songs = songs;
-      detailedAlbumInfos![albumId] = albumInfo;
-    } else {
-      throw Exception("Failed to fetch songs info!");
-    }
-    return albumInfo;
-  }
-
-  List<AlbumInfo> _sortByArtist(List<AlbumInfo> albums, bool desc) {
-    int multiplier = desc ? -1 : 1;
-    albums.sort((a, b) {
-      if (a.artists != null && b.artists != null) {
-        if (a.artists == null) {
-          return 1 * multiplier;
-        } else if (b.artists == null) {
-          return -1 * multiplier;
-        } else {
-          a.artists!.sort((c, d) => c.toLowerCase().compareTo(d.toLowerCase()));
-          b.artists!.sort((c, d) => c.toLowerCase().compareTo(d.toLowerCase()));
-
-          if (a.artists!.first.toLowerCase() ==
-              b.artists!.first.toLowerCase()) {
-            return a.title.toLowerCase().compareTo(b.title.toLowerCase()) *
-                multiplier;
-          } else {
-            return a.artists!.first
-                    .toLowerCase()
-                    .compareTo(b.artists!.first.toLowerCase()) *
-                multiplier;
-          }
-        }
-      } else {
-        return 0;
-      }
-    });
-
-    return albums;
-  }
-
-  @override
-  Future<List<AlbumInfo>> fetchAlbumsSorted() async {
-    List<AlbumInfo> albums =
-        (await fetchAlbums()).entries.map((e) => e.value).toList();
-
-    //sort by album artist name, and if equal, by album name
-    switch (sortType) {
-      case SortType.albumArtist:
-        return _sortByArtist(albums, false);
-      case SortType.albumArtistDesc:
-        return _sortByArtist(albums, true);
-      case SortType.albumName:
-        albums.sort(
-            (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
-        return albums;
-      case SortType.albumNameDesc:
-        albums.sort(
-            (a, b) => b.title.toLowerCase().compareTo(a.title.toLowerCase()));
-        return albums;
-      default:
-        return _sortByArtist(albums, false);
-    }
-  }
-
-  @override
-  //TODO: change this, it shouldn't just delete cached data, since we could have no connection
-  Future<Map<String, AlbumInfo>> forceFetchAlbums() async {
-    detailedAlbumInfos = null;
-    return await fetchAlbums();
-  }
-
   //    _____
   //   |_   _|
   //     | |  _ __ ___   __ _  __ _  ___  ___
@@ -276,73 +200,4 @@ class JellyfinAPI implements APIService {
   //                           __/ |
   //                          |___/
 
-  Future<File> fileImage(String filename) async {
-    Directory dir = await getApplicationDocumentsDirectory();
-    Directory subDir =
-        await Directory('${dir.path}/cachedImages').create(recursive: true);
-    String pathName = '${subDir.path}/$filename';
-    return File(pathName);
-  }
-
-  Future<ImageProvider> _imageWithCache({
-    required String imageFilename,
-    required String url,
-  }) async {
-    return NetworkToFileImage(
-      url: url,
-      file: await fileImage(imageFilename),
-      headers: reqHeaders,
-    );
-  }
-
-  Uri? uriIfTagExists({
-    required String? primaryImageTag,
-    required String itemId,
-    int maxWidth = 256,
-    int maxHeight = 256,
-  }) {
-    if (primaryImageTag == null) {
-      return null;
-    }
-
-    final String url =
-        '$reqBaseUrl/Items/$itemId/Images/Primary?tag=$primaryImageTag?maxWidth=$maxWidth&maxHeight=$maxHeight';
-
-    return Uri.parse(url);
-  }
-
-  Widget imageIfTagExists({
-    required String? primaryImageTag,
-    required String itemId,
-    Widget? alternative,
-    BoxFit? fit,
-    int maxWidth = 256,
-    int maxHeight = 256,
-  }) {
-    if (primaryImageTag != null) {
-      final String url =
-          '$reqBaseUrl/Items/$itemId/Images/Primary?tag=$primaryImageTag?maxWidth=$maxWidth&maxHeight=$maxHeight';
-
-      return FutureBuilder<ImageProvider>(
-        future: _imageWithCache(
-          imageFilename: primaryImageTag + ".img",
-          url: url,
-        ),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return FadeInImage(
-              fadeInDuration: const Duration(milliseconds: 200),
-              placeholder: MemoryImage(kTransparentImage),
-              image: snapshot.data!,
-              fit: fit ?? BoxFit.cover,
-            );
-          } else {
-            return alternative ?? Container();
-          }
-        },
-      );
-    } else {
-      return alternative ?? Container();
-    }
-  }
 }
