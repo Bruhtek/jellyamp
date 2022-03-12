@@ -16,6 +16,122 @@ enum SortType {
   albumArtistDesc,
 }
 
+class Artist {
+  String name;
+  String id;
+  String? primaryImageTag;
+
+  List<String>? albumIds;
+  List<String>? albumNames;
+
+  List<String>? songIds;
+  List<String>? songNames;
+
+  bool isFavorite;
+
+  Artist({
+    required this.name,
+    required this.id,
+    this.primaryImageTag,
+    this.albumIds = const [],
+    this.albumNames = const [],
+    this.songIds = const [],
+    this.songNames = const [],
+    required this.isFavorite,
+  });
+}
+
+class Song {
+  String id;
+  String title;
+  String? albumPrimaryImageTag;
+
+  List<String>? artistIds;
+  List<String>? artistNames;
+  String albumId;
+  String albumName;
+
+  bool isFavorite;
+
+  Song({
+    required this.id,
+    required this.title,
+    required this.albumPrimaryImageTag,
+    this.artistIds = const [],
+    this.artistNames = const [],
+    required this.albumId,
+    required this.albumName,
+    this.isFavorite = false,
+  });
+
+  factory Song.fromJson(Map<String, dynamic> json) {
+    List<String> artistIds = [];
+    List<String> artistNames = [];
+
+    for (var artist in json['ArtistItems']) {
+      artistIds.add(artist['Id']);
+      artistNames.add(artist['Name']);
+    }
+
+    return Song(
+      id: json['Id'] as String,
+      title: json['Name'] as String,
+      albumPrimaryImageTag: json['AlbumPrimaryImageTag'] as String?,
+      artistIds: artistIds,
+      artistNames: artistNames,
+      albumId: json['AlbumId'] as String,
+      albumName: json['Album'] as String,
+      isFavorite: json['UserData']['IsFavorite'] as bool,
+    );
+  }
+}
+
+class Album {
+  String id;
+  String title;
+  String? primaryImageTag;
+
+  List<String> artistIds;
+  List<String> artistNames;
+
+  List<String> songIds;
+  List<String> songTitles;
+
+  bool isFavorite;
+
+  Album({
+    required this.id,
+    required this.title,
+    this.primaryImageTag,
+    this.artistIds = const [],
+    this.artistNames = const [],
+    this.songIds = const [],
+    this.songTitles = const [],
+    this.isFavorite = false,
+  });
+
+  factory Album.fromJson(Map<String, dynamic> json) {
+    List<String> artistIds = [];
+    List<String> artistNames = [];
+
+    for (var artist in json['AlbumArtists']) {
+      artistIds.add(artist['Id']);
+      artistNames.add(artist['Name']);
+    }
+
+    return Album(
+      id: json['Id'] as String,
+      title: json['Name'] as String,
+      primaryImageTag: json['ImageTags']['Primary'] as String?,
+      artistIds: artistIds,
+      artistNames: artistNames,
+      songIds: [],
+      songTitles: [],
+      isFavorite: json['UserData']['IsFavorite'] as bool,
+    );
+  }
+}
+
 class JellyfinAPI extends ChangeNotifier {
   //    ______ _   ___      __
   //   |  ____| \ | \ \    / /
@@ -43,6 +159,9 @@ class JellyfinAPI extends ChangeNotifier {
 
   bool loggedIn = false;
   bool wrongAuth = false;
+
+  /// Declares whether the user has finished logging in.
+  /// If [loggedIn] is true, also declares whether data has finished loading.
   bool initialized = false;
 
   void _initialize() async {
@@ -51,6 +170,7 @@ class JellyfinAPI extends ChangeNotifier {
       bool authenticated = await _checkAuthenticated();
       if (authenticated) {
         loggedIn = true;
+        await fetchData();
       } else {
         wrongAuth = true;
       }
@@ -61,18 +181,22 @@ class JellyfinAPI extends ChangeNotifier {
   }
 
   Future<bool> _checkAuthenticated() async {
-    final uri = Uri.parse("$_jellyfinUrl/Users/Me");
+    try {
+      final uri = Uri.parse("$_jellyfinUrl/Users/Me");
 
-    final response = await http.get(
-      uri,
-      headers: reqHeaders,
-    );
+      final response = await http.get(
+        uri,
+        headers: reqHeaders,
+      );
 
-    if (response.statusCode == 200) {
-      return true;
+      if (response.statusCode == 200) {
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      return false;
     }
-
-    return false;
   }
 
   Future<bool> checkServerUrl(String url) async {
@@ -190,6 +314,82 @@ class JellyfinAPI extends ChangeNotifier {
   //    / ____ \ |_| | (_| | | (_) |
   //   /_/    \_\__,_|\__,_|_|\___/
   //
+
+  Map<String, Artist> _artists = {};
+  Map<String, Song> _songs = {};
+  Map<String, Album> _albums = {};
+
+  /// Fetches and sorts out all the data.
+  /// Returns true if the data was fetched properly, false otherwise.
+  Future<bool> fetchData() async {
+    Map<String, Album>? albums = await _fetchAlbums();
+    Map<String, Song>? songs = await _fetchSongs();
+
+    if (albums != null && songs != null) {
+      songs.forEach((key, value) {
+        albums[value.albumId]?.songIds.add(value.id);
+        albums[value.albumId]?.songTitles.add(value.title);
+      });
+
+      _albums = albums;
+      _songs = songs;
+
+      notify();
+      return true;
+    }
+
+    return false;
+  }
+
+  /// returns null in case of an error
+  Future<Map<String, Album>?> _fetchAlbums() async {
+    Map<String, Album> albums = {};
+
+    var response = await http.get(
+      Uri.parse(
+          '$_jellyfinUrl/Users/$_userId/Items?includeItemTypes=MusicAlbum&recursive=true'),
+      headers: reqHeaders,
+    );
+
+    if (response.statusCode == 200) {
+      final int albumCount = jsonDecode(response.body)['TotalRecordCount'];
+
+      for (int i = 0; i < albumCount; i++) {
+        Album temp = Album.fromJson(jsonDecode(response.body)['Items'][i]);
+
+        albums[temp.id] = temp;
+      }
+
+      return albums;
+    }
+
+    return null;
+  }
+
+  /// returns null in case of an error
+  Future<Map<String, Song>?> _fetchSongs() async {
+    Map<String, Song> songs = {};
+
+    var response = await http.get(
+      Uri.parse(
+          '$_jellyfinUrl/Users/$_userId/Items?includeItemTypes=Audio&recursive=true'),
+      headers: reqHeaders,
+    );
+
+    if (response.statusCode == 200) {
+      final int albumCount = jsonDecode(response.body)['TotalRecordCount'];
+
+      for (int i = 0; i < albumCount; i++) {
+        Song temp = Song.fromJson(jsonDecode(response.body)['Items'][i]);
+
+        songs[temp.id] = temp;
+      }
+
+      return songs;
+    }
+
+    return null;
+  }
 
   //    _____
   //   |_   _|
