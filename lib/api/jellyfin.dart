@@ -442,6 +442,63 @@ class JellyfinAPI extends ChangeNotifier {
     return null;
   }
 
+  List<Album> getAlbums({SortType sortType = SortType.albumArtist}) {
+    List<Album> albums = [];
+
+    _albums.forEach((key, value) {
+      albums.add(value);
+    });
+
+    switch (sortType) {
+      case SortType.albumName:
+        break;
+      case SortType.albumNameDesc:
+        break;
+      case SortType.albumArtist:
+        albums = _sortByArtist(albums, false);
+        break;
+      case SortType.albumArtistDesc:
+        albums = _sortByArtist(albums, true);
+        break;
+    }
+
+    return albums;
+  }
+
+  List<Album> _sortByArtist(List<Album> albums, bool desc) {
+    int multiplier = desc ? -1 : 1;
+
+    albums.sort((a, b) {
+      if (a.artistNames.isNotEmpty && b.artistNames.isNotEmpty) {
+        if (a.artistNames.isEmpty) {
+          return 1 * multiplier;
+        } else if (b.artistNames.isEmpty) {
+          return -1 * multiplier;
+        } else {
+          a.artistNames
+              .sort((c, d) => c.toLowerCase().compareTo(d.toLowerCase()));
+          b.artistNames
+              .sort((c, d) => c.toLowerCase().compareTo(d.toLowerCase()));
+
+          if (a.artistNames.first.toLowerCase() ==
+              b.artistNames.first.toLowerCase()) {
+            return a.title.toLowerCase().compareTo(b.title.toLowerCase()) *
+                multiplier;
+          } else {
+            return a.artistNames.first
+                    .toLowerCase()
+                    .compareTo(b.artistNames.first.toLowerCase()) *
+                multiplier;
+          }
+        }
+      } else {
+        return 0;
+      }
+    });
+
+    return albums;
+  }
+
   //    _____
   //   |_   _|
   //     | |  _ __ ___   __ _  __ _  ___  ___
