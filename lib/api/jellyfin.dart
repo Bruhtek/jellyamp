@@ -21,11 +21,11 @@ class Artist {
   String id;
   String? primaryImageTag;
 
-  List<String>? albumIds;
-  List<String>? albumNames;
+  List<String> albumIds;
+  List<String> albumNames;
 
-  List<String>? songIds;
-  List<String>? songNames;
+  List<String> songIds;
+  List<String> songNames;
 
   bool isFavorite;
 
@@ -39,6 +39,19 @@ class Artist {
     this.songNames = const [],
     required this.isFavorite,
   });
+
+  factory Artist.fromJson(Map<String, dynamic> json) {
+    return Artist(
+      id: json['Id'] as String,
+      name: json['Name'] as String,
+      primaryImageTag: json['ImageTags']['Primary'] as String?,
+      albumIds: [],
+      albumNames: [],
+      songIds: [],
+      songNames: [],
+      isFavorite: json['UserData']['IsFavorite'] as bool,
+    );
+  }
 }
 
 class Song {
@@ -46,8 +59,8 @@ class Song {
   String title;
   String? albumPrimaryImageTag;
 
-  List<String>? artistIds;
-  List<String>? artistNames;
+  List<String> artistIds;
+  List<String> artistNames;
   String albumId;
   String albumName;
 
@@ -324,15 +337,28 @@ class JellyfinAPI extends ChangeNotifier {
   Future<bool> fetchData() async {
     Map<String, Album>? albums = await _fetchAlbums();
     Map<String, Song>? songs = await _fetchSongs();
+    Map<String, Artist>? artists = await _fetchArtists();
 
-    if (albums != null && songs != null) {
+    if (albums != null && songs != null && artists != null) {
       songs.forEach((key, value) {
         albums[value.albumId]?.songIds.add(value.id);
         albums[value.albumId]?.songTitles.add(value.title);
+        for (String artistId in value.artistIds) {
+          artists[artistId]?.songIds.add(value.id);
+          artists[artistId]?.songNames.add(value.title);
+        }
+      });
+
+      albums.forEach((key, value) {
+        for (String artistId in value.artistIds) {
+          artists[artistId]?.albumIds.add(value.id);
+          artists[artistId]?.albumNames.add(value.title);
+        }
       });
 
       _albums = albums;
       _songs = songs;
+      _artists = artists;
 
       notify();
       return true;
@@ -386,6 +412,31 @@ class JellyfinAPI extends ChangeNotifier {
       }
 
       return songs;
+    }
+
+    return null;
+  }
+
+  /// returns null in case of an error
+  Future<Map<String, Artist>?> _fetchArtists() async {
+    Map<String, Artist> artists = {};
+
+    var response = await http.get(
+      Uri.parse(
+          '$_jellyfinUrl/Users/$_userId/Items?includeItemTypes=MusicArtist&recursive=true'),
+      headers: reqHeaders,
+    );
+
+    if (response.statusCode == 200) {
+      final int albumCount = jsonDecode(response.body)['TotalRecordCount'];
+
+      for (int i = 0; i < albumCount; i++) {
+        Artist temp = Artist.fromJson(jsonDecode(response.body)['Items'][i]);
+
+        artists[temp.id] = temp;
+      }
+
+      return artists;
     }
 
     return null;
