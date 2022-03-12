@@ -1,7 +1,24 @@
 import 'package:flutter/material.dart';
 
-class MusicScreen extends StatelessWidget {
+import 'albums.dart';
+import 'artists.dart';
+import 'songs.dart';
+
+class MusicScreen extends StatefulWidget {
   const MusicScreen({Key? key}) : super(key: key);
+
+  @override
+  State<MusicScreen> createState() => _MusicScreenState();
+}
+
+class _MusicScreenState extends State<MusicScreen> {
+  bool _isSelecting = false;
+
+  void toggleSelecting() {
+    setState(() {
+      _isSelecting = !_isSelecting;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,20 +46,25 @@ class MusicScreen extends StatelessWidget {
       ],
     );
 
-    AppBar appBar = AppBar(
+    AppBar appBarDefault = AppBar(
       title: const Text("Music Library"),
+      bottom: tabBar,
+    );
+
+    AppBar appBarSelecting = AppBar(
+      title: const Text("\$ selected"),
       bottom: tabBar,
     );
 
     return DefaultTabController(
         length: 3,
         child: Scaffold(
-          appBar: appBar,
-          body: const TabBarView(
+          appBar: _isSelecting ? appBarSelecting : appBarDefault,
+          body: TabBarView(
             children: [
-              Center(child: Text('Albums')),
-              Center(child: Text('Artists')),
-              Center(child: Text('Songs')),
+              AlbumsScreen(toggleSelecting),
+              ArtistsScreen(toggleSelecting),
+              SongsScreen(toggleSelecting),
             ],
           ),
         ));

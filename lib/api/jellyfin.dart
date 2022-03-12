@@ -332,6 +332,10 @@ class JellyfinAPI extends ChangeNotifier {
   Map<String, Song> _songs = {};
   Map<String, Album> _albums = {};
 
+  int get artistsCount => _artists.length;
+  int get songsCount => _songs.length;
+  int get albumsCount => _albums.length;
+
   /// Fetches and sorts out all the data.
   /// Returns true if the data was fetched properly, false otherwise.
   Future<bool> fetchData() async {
@@ -451,8 +455,10 @@ class JellyfinAPI extends ChangeNotifier {
 
     switch (sortType) {
       case SortType.albumName:
+        albums = _sortByTitle(albums, false);
         break;
       case SortType.albumNameDesc:
+        albums = _sortByTitle(albums, true);
         break;
       case SortType.albumArtist:
         albums = _sortByArtist(albums, false);
