@@ -499,6 +499,21 @@ class JellyfinAPI extends ChangeNotifier {
     return albums;
   }
 
+  List<Album> _sortByTitle(List<Album> albums, bool desc) {
+    int multiplier = desc ? -1 : 1;
+
+    albums.sort((a, b) {
+      if (a.title.toLowerCase() == b.title.toLowerCase()) {
+        return 0;
+      } else {
+        return a.title.toLowerCase().compareTo(b.title.toLowerCase()) *
+            multiplier;
+      }
+    });
+
+    return albums;
+  }
+
   //    _____
   //   |_   _|
   //     | |  _ __ ___   __ _  __ _  ___  ___
