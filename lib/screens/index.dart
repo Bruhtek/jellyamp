@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jellyamp/api/jellyfin.dart';
 import 'package:jellyamp/screens/setup/setup.dart';
 import '../main.dart';
 
@@ -25,7 +24,7 @@ class _IndexScreenState extends ConsumerState<IndexScreen> {
     const HomeScreen(),
     const MusicScreen(),
     const SettingsScreen(),
-    DebugScreen(),
+    const DebugScreen(),
   ];
 
   @override
@@ -44,7 +43,7 @@ class _IndexScreenState extends ConsumerState<IndexScreen> {
     }
 
     if (!loggedIn) {
-      return SetupScreen();
+      return const SetupScreen();
     }
 
     return MaterialApp(

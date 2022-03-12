@@ -6,7 +6,7 @@ class MusicScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TabBar tabBar = TabBar(
-      isScrollable: true,
+      isScrollable: false,
       tabs: [
         Tab(
             child: Row(children: const [
@@ -29,13 +29,15 @@ class MusicScreen extends StatelessWidget {
       ],
     );
 
+    AppBar appBar = AppBar(
+      title: const Text("Music Library"),
+      bottom: tabBar,
+    );
+
     return DefaultTabController(
         length: 3,
         child: Scaffold(
-          appBar: AppBar(
-            title: const Text("Music Library"),
-            bottom: tabBar,
-          ),
+          appBar: appBar,
           body: const TabBarView(
             children: [
               Center(child: Text('Albums')),

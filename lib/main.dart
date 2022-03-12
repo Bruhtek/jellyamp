@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'screens/index.dart';
@@ -27,6 +24,7 @@ void main() async {
   final encryptKey = base64Url.decode(encryptionKey);
   await Hive.openBox('encrypted', encryptionCipher: HiveAesCipher(encryptKey));*/
   await Hive.openBox('encrypted');
+  await Hive.openBox('preferences');
   await Hive.openLazyBox('musicData');
 
   runApp(const ProviderScope(child: IndexScreen()));
