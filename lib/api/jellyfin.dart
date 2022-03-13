@@ -2,12 +2,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:network_to_file_image/network_to_file_image.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:transparent_image/transparent_image.dart';
 
 enum SortType {
   albumName,
@@ -529,4 +532,79 @@ class JellyfinAPI extends ChangeNotifier {
   //                           __/ |
   //                          |___/
 
+  Future<File> _fileImage(String filename) async {
+    Directory dir = await getApplicationDocumentsDirectory();
+    Directory subDir =
+        await Directory('${dir.path}/cachedImages').create(recursive: true);
+    String pathName = '${subDir.path}/$filename';
+    return File(pathName);
+  }
+
+  Future<ImageProvider> _imageWithCache({
+    required String imageFilename,
+    required String imageUrl,
+  }) async {
+    return NetworkToFileImage(
+      url: imageUrl,
+      file: await _fileImage(imageFilename),
+      headers: reqHeaders,
+    );
+  }
+
+  String? _imageTagUrl({
+    required String primaryImageTag,
+    required String itemId,
+    int maxWidth = 256,
+    int maxHeight = 256,
+  }) {
+    final String url =
+        '$_jellyfinUrl/Items/$itemId/Images/Primary?tag=$primaryImageTag&maxWidth=$maxWidth&maxHeight=$maxHeight';
+
+    return url;
+  }
+
+  Future<Widget> itemImage({
+    required dynamic item,
+    BoxFit fit = BoxFit.cover,
+    int maxWidth = 256,
+    int maxHeight = 256,
+    Widget alternative = const SizedBox(),
+  }) async {
+    String? imageTag;
+    String itemId;
+
+    if (item is Album) {
+      imageTag = item.primaryImageTag;
+      itemId = item.id;
+    } else if (item is Artist) {
+      imageTag = item.primaryImageTag;
+      itemId = item.id;
+    } else if (item is Song) {
+      imageTag = item.albumPrimaryImageTag;
+      itemId = item.id;
+    } else {
+      return alternative;
+    }
+
+    if (imageTag == null) {
+      return alternative;
+    }
+
+    final String url = _imageTagUrl(
+      primaryImageTag: imageTag,
+      itemId: itemId,
+      maxHeight: maxHeight,
+      maxWidth: maxWidth,
+    )!;
+
+    return FadeInImage(
+      fadeInDuration: const Duration(milliseconds: 200),
+      placeholder: MemoryImage(kTransparentImage),
+      image: await _imageWithCache(
+        imageFilename: imageTag + ".img",
+        imageUrl: url,
+      ),
+      fit: fit,
+    );
+  }
 }
