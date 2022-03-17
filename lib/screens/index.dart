@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jellyamp/screens/player/floating_player.dart';
 import 'package:jellyamp/screens/setup/setup.dart';
 import '../main.dart';
 
@@ -51,6 +52,9 @@ class _IndexScreenState extends ConsumerState<IndexScreen> {
         //pages[index],
         body: pages[index],
         bottomNavigationBar: _navigationBar(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton:
+            const Align(child: FloatingPlayer(), alignment: Alignment(1, 1.05)),
       ),
     );
   }
