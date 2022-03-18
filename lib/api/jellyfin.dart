@@ -12,11 +12,19 @@ import 'dart:convert';
 
 import 'package:transparent_image/transparent_image.dart';
 
-enum SortType {
-  albumName,
-  albumNameDesc,
-  albumArtist,
-  albumArtistDesc,
+enum AlbumSortType {
+  name,
+  nameDesc,
+  artist,
+  artistDesc,
+}
+enum ArtistSortType {
+  name,
+  nameDesc,
+}
+enum SongSortType {
+  name,
+  nameDesc,
 }
 
 class Artist {
@@ -449,7 +457,7 @@ class JellyfinAPI extends ChangeNotifier {
     return null;
   }
 
-  List<Album> getAlbums({SortType sortType = SortType.albumArtist}) {
+  List<Album> getAlbums({AlbumSortType sortType = AlbumSortType.artist}) {
     List<Album> albums = [];
 
     _albums.forEach((key, value) {
@@ -457,16 +465,16 @@ class JellyfinAPI extends ChangeNotifier {
     });
 
     switch (sortType) {
-      case SortType.albumName:
+      case AlbumSortType.name:
         albums = _sortByTitle(albums, false);
         break;
-      case SortType.albumNameDesc:
+      case AlbumSortType.nameDesc:
         albums = _sortByTitle(albums, true);
         break;
-      case SortType.albumArtist:
+      case AlbumSortType.artist:
         albums = _sortByArtist(albums, false);
         break;
-      case SortType.albumArtistDesc:
+      case AlbumSortType.artistDesc:
         albums = _sortByArtist(albums, true);
         break;
     }
@@ -521,6 +529,48 @@ class JellyfinAPI extends ChangeNotifier {
     });
 
     return albums;
+  }
+
+  List<Artist> getArtists({ArtistSortType sortType = ArtistSortType.name}) {
+    List<Artist> artists = [];
+
+    _artists.forEach((key, value) {
+      artists.add(value);
+    });
+
+    switch (sortType) {
+      case ArtistSortType.name:
+        artists.sort(
+            (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+        break;
+      case ArtistSortType.nameDesc:
+        artists.sort(
+            (a, b) => b.name.toLowerCase().compareTo(a.name.toLowerCase()));
+        break;
+    }
+
+    return artists;
+  }
+
+  List<Song> getSongs({SongSortType sortType = SongSortType.name}) {
+    List<Song> songs = [];
+
+    _songs.forEach((key, value) {
+      songs.add(value);
+    });
+
+    switch (sortType) {
+      case SongSortType.name:
+        songs.sort(
+            (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+        break;
+      case SongSortType.nameDesc:
+        songs.sort(
+            (a, b) => b.title.toLowerCase().compareTo(a.title.toLowerCase()));
+        break;
+    }
+
+    return songs;
   }
 
   //    _____
