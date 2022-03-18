@@ -9,7 +9,7 @@ class FloatingPlayer extends ConsumerStatefulWidget {
 }
 
 class _FloatingPlayerState extends ConsumerState<FloatingPlayer> {
-  bool visible = true;
+  bool visible = false;
 
   @override
   Widget build(BuildContext context) {
