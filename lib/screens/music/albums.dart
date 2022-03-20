@@ -6,6 +6,7 @@ import 'utilities/grid.dart';
 
 int crossAxisCount = 2;
 
+// ignore: must_be_immutable
 class AlbumsScreen extends ConsumerWidget {
   AlbumsScreen(this.toggleSelecting, {Key? key}) : super(key: key);
 
@@ -14,7 +15,7 @@ class AlbumsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 4.0),
+      margin: const EdgeInsets.symmetric(horizontal: 4.0),
       child: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           mainAxisSpacing: 8,

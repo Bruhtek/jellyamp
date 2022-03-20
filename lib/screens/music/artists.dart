@@ -6,6 +6,7 @@ import 'utilities/grid.dart';
 
 int crossAxisCount = 2;
 
+// ignore: must_be_immutable
 class ArtistsScreen extends ConsumerWidget {
   ArtistsScreen(this.toggleSelecting, {Key? key}) : super(key: key);
 

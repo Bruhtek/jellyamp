@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 import '../../../api/jellyfin.dart';
 import '../../../main.dart';
