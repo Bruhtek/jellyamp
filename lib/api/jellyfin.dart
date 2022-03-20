@@ -221,7 +221,6 @@ class JellyfinAPI extends ChangeNotifier {
       return false;
     }
   }
-
   Future<bool> checkServerUrl(String url) async {
     if (_isUrlValid(url)) {
       try {
@@ -242,7 +241,6 @@ class JellyfinAPI extends ChangeNotifier {
 
     return false;
   }
-
   bool _isUrlValid(String? url) {
     if (url?.endsWith('/') ?? true) {
       return false;
@@ -250,7 +248,6 @@ class JellyfinAPI extends ChangeNotifier {
     final uri = Uri.tryParse((url ?? '') + '/');
     return uri != null && uri.hasAbsolutePath && uri.scheme.startsWith('http');
   }
-
   Future<bool> login(String username, String password, String url) async {
     if (_isUrlValid(url)) {
       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -346,6 +343,9 @@ class JellyfinAPI extends ChangeNotifier {
   int get songsCount => _songs.length;
   int get albumsCount => _albums.length;
 
+  // █▀▀ █▀▀ ▀█▀ █▀▀ █░█ █ █▄░█ █▀▀   █▀▄ ▄▀█ ▀█▀ ▄▀█
+  // █▀░ ██▄ ░█░ █▄▄ █▀█ █ █░▀█ █▄█   █▄▀ █▀█ ░█░ █▀█
+
   /// Fetches and sorts out all the data.
   /// Returns true if the data was fetched properly, false otherwise.
   Future<bool> fetchData() async {
@@ -405,8 +405,6 @@ class JellyfinAPI extends ChangeNotifier {
 
     return null;
   }
-
-  /// returns null in case of an error
   Future<Map<String, Song>?> _fetchSongs() async {
     Map<String, Song> songs = {};
 
@@ -430,8 +428,6 @@ class JellyfinAPI extends ChangeNotifier {
 
     return null;
   }
-
-  /// returns null in case of an error
   Future<Map<String, Artist>?> _fetchArtists() async {
     Map<String, Artist> artists = {};
 
@@ -455,6 +451,9 @@ class JellyfinAPI extends ChangeNotifier {
 
     return null;
   }
+
+  // █▀▀ █▀▀ ▀█▀   █▀▄ ▄▀█ ▀█▀ ▄▀█
+  // █▄█ ██▄ ░█░   █▄▀ █▀█ ░█░ █▀█
 
   List<Album> getAlbums({AlbumSortType sortType = AlbumSortType.artist}) {
     List<Album> albums = [];
@@ -480,7 +479,6 @@ class JellyfinAPI extends ChangeNotifier {
 
     return albums;
   }
-
   List<Album> _sortByArtist(List<Album> albums, bool desc) {
     int multiplier = desc ? -1 : 1;
 
@@ -514,7 +512,6 @@ class JellyfinAPI extends ChangeNotifier {
 
     return albums;
   }
-
   List<Album> _sortByTitle(List<Album> albums, bool desc) {
     int multiplier = desc ? -1 : 1;
 
@@ -529,7 +526,6 @@ class JellyfinAPI extends ChangeNotifier {
 
     return albums;
   }
-
   List<Artist> getArtists({ArtistSortType sortType = ArtistSortType.name}) {
     List<Artist> artists = [];
 
@@ -550,7 +546,6 @@ class JellyfinAPI extends ChangeNotifier {
 
     return artists;
   }
-
   List<Song> getSongs({SongSortType sortType = SongSortType.name}) {
     List<Song> songs = [];
 
@@ -570,6 +565,40 @@ class JellyfinAPI extends ChangeNotifier {
     }
 
     return songs;
+  }
+
+  List<Album> getRandomAlbums({int count = 20}) {
+    List<Album> albums = [];
+
+    _albums.forEach((key, value) {
+      albums.add(value);
+    });
+
+    albums.shuffle();
+
+    return albums.sublist(0, count);
+  }
+  List<Artist> getRandomArtists({int count = 20}) {
+    List<Artist> artists = [];
+
+    _artists.forEach((key, value) {
+      artists.add(value);
+    });
+
+    artists.shuffle();
+
+    return artists.sublist(0, count);
+  }
+  List<Song> getRandomSongs({int count = 20}) {
+    List<Song> songs = [];
+
+    _songs.forEach((key, value) {
+      songs.add(value);
+    });
+
+    songs.shuffle();
+
+    return songs.sublist(0, count);
   }
 
   //    _____

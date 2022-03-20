@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../main.dart';
-import 'utilities/grid.dart';
+import '../../utilities/grid.dart';
 
 int crossAxisCount = 2;
 

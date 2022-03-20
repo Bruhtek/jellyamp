@@ -97,7 +97,7 @@ Widget albumCover(Album album, WidgetRef ref) {
           item: album,
           alternative: const Center(
             child: Icon(
-              Icons.music_note_rounded,
+              Icons.album_rounded,
               size: 72,
               color: Colors.black54,
             ),
@@ -141,7 +141,7 @@ Widget songCover(Song song, WidgetRef ref) {
           item: song,
           alternative: const Center(
             child: Icon(
-              Icons.person_rounded,
+              Icons.music_note_rounded,
               size: 72,
               color: Colors.black54,
             ),
