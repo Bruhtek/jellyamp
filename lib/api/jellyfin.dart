@@ -17,10 +17,12 @@ enum AlbumSortType {
   artist,
   artistDesc,
 }
+
 enum ArtistSortType {
   name,
   nameDesc,
 }
+
 enum SongSortType {
   name,
   nameDesc,
@@ -324,8 +326,7 @@ class JellyfinAPI extends ChangeNotifier {
   }
 
   String get reqBaseUrl => _jellyfinUrl;
-  Map<String, String> get reqHeaders =>
-      {'X-MediaBrowser-Token': _mediaBrowserToken};
+  Map<String, String> get reqHeaders => {'X-MediaBrowser-Token': _mediaBrowserToken};
 
   //                      _ _
   //       /\            | (_)
@@ -342,9 +343,6 @@ class JellyfinAPI extends ChangeNotifier {
   int get artistsCount => _artists.length;
   int get songsCount => _songs.length;
   int get albumsCount => _albums.length;
-
-  // █▀▀ █▀▀ ▀█▀ █▀▀ █░█ █ █▄░█ █▀▀   █▀▄ ▄▀█ ▀█▀ ▄▀█
-  // █▀░ ██▄ ░█░ █▄▄ █▀█ █ █░▀█ █▄█   █▄▀ █▀█ ░█░ █▀█
 
   /// Fetches and sorts out all the data.
   /// Returns true if the data was fetched properly, false otherwise.
@@ -381,13 +379,12 @@ class JellyfinAPI extends ChangeNotifier {
     return false;
   }
 
-  /// returns null in case of an error
+  /// all 3 return null in case of an error
   Future<Map<String, Album>?> _fetchAlbums() async {
     Map<String, Album> albums = {};
 
     var response = await http.get(
-      Uri.parse(
-          '$_jellyfinUrl/Users/$_userId/Items?includeItemTypes=MusicAlbum&recursive=true'),
+      Uri.parse('$_jellyfinUrl/Users/$_userId/Items?includeItemTypes=MusicAlbum&recursive=true'),
       headers: reqHeaders,
     );
 
@@ -409,8 +406,7 @@ class JellyfinAPI extends ChangeNotifier {
     Map<String, Song> songs = {};
 
     var response = await http.get(
-      Uri.parse(
-          '$_jellyfinUrl/Users/$_userId/Items?includeItemTypes=Audio&recursive=true'),
+      Uri.parse('$_jellyfinUrl/Users/$_userId/Items?includeItemTypes=Audio&recursive=true'),
       headers: reqHeaders,
     );
 
@@ -432,8 +428,7 @@ class JellyfinAPI extends ChangeNotifier {
     Map<String, Artist> artists = {};
 
     var response = await http.get(
-      Uri.parse(
-          '$_jellyfinUrl/Users/$_userId/Items?includeItemTypes=MusicArtist&recursive=true'),
+      Uri.parse('$_jellyfinUrl/Users/$_userId/Items?includeItemTypes=MusicArtist&recursive=true'),
       headers: reqHeaders,
     );
 
@@ -452,8 +447,9 @@ class JellyfinAPI extends ChangeNotifier {
     return null;
   }
 
-  // █▀▀ █▀▀ ▀█▀   █▀▄ ▄▀█ ▀█▀ ▄▀█
-  // █▄█ ██▄ ░█░   █▄▀ █▀█ ░█░ █▀█
+  Album? getAlbum(String id) => _albums[id];
+  Artist? getArtist(String id) => _artists[id];
+  Song? getSong(String id) => _songs[id];
 
   List<Album> getAlbums({AlbumSortType sortType = AlbumSortType.artist}) {
     List<Album> albums = [];
@@ -489,19 +485,13 @@ class JellyfinAPI extends ChangeNotifier {
         } else if (b.artistNames.isEmpty) {
           return -1 * multiplier;
         } else {
-          a.artistNames
-              .sort((c, d) => c.toLowerCase().compareTo(d.toLowerCase()));
-          b.artistNames
-              .sort((c, d) => c.toLowerCase().compareTo(d.toLowerCase()));
+          a.artistNames.sort((c, d) => c.toLowerCase().compareTo(d.toLowerCase()));
+          b.artistNames.sort((c, d) => c.toLowerCase().compareTo(d.toLowerCase()));
 
-          if (a.artistNames.first.toLowerCase() ==
-              b.artistNames.first.toLowerCase()) {
-            return a.title.toLowerCase().compareTo(b.title.toLowerCase()) *
-                multiplier;
+          if (a.artistNames.first.toLowerCase() == b.artistNames.first.toLowerCase()) {
+            return a.title.toLowerCase().compareTo(b.title.toLowerCase()) * multiplier;
           } else {
-            return a.artistNames.first
-                    .toLowerCase()
-                    .compareTo(b.artistNames.first.toLowerCase()) *
+            return a.artistNames.first.toLowerCase().compareTo(b.artistNames.first.toLowerCase()) *
                 multiplier;
           }
         }
@@ -519,8 +509,7 @@ class JellyfinAPI extends ChangeNotifier {
       if (a.title.toLowerCase() == b.title.toLowerCase()) {
         return 0;
       } else {
-        return a.title.toLowerCase().compareTo(b.title.toLowerCase()) *
-            multiplier;
+        return a.title.toLowerCase().compareTo(b.title.toLowerCase()) * multiplier;
       }
     });
 
@@ -535,12 +524,10 @@ class JellyfinAPI extends ChangeNotifier {
 
     switch (sortType) {
       case ArtistSortType.name:
-        artists.sort(
-            (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+        artists.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
         break;
       case ArtistSortType.nameDesc:
-        artists.sort(
-            (a, b) => b.name.toLowerCase().compareTo(a.name.toLowerCase()));
+        artists.sort((a, b) => b.name.toLowerCase().compareTo(a.name.toLowerCase()));
         break;
     }
 
@@ -555,12 +542,10 @@ class JellyfinAPI extends ChangeNotifier {
 
     switch (sortType) {
       case SongSortType.name:
-        songs.sort(
-            (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+        songs.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
         break;
       case SongSortType.nameDesc:
-        songs.sort(
-            (a, b) => b.title.toLowerCase().compareTo(a.title.toLowerCase()));
+        songs.sort((a, b) => b.title.toLowerCase().compareTo(a.title.toLowerCase()));
         break;
     }
 
@@ -601,6 +586,32 @@ class JellyfinAPI extends ChangeNotifier {
     return songs.sublist(0, count);
   }
 
+  List<Album> recomendedAlbums = [];
+  List<Artist> recomendedArtists = [];
+  List<Song> recomendedSongs = [];
+
+  List<Album> getRecommendedAlbums() {
+    if (recomendedAlbums.isEmpty) {
+      recomendedAlbums = getRandomAlbums(count: 20);
+    }
+
+    return recomendedAlbums;
+  }
+  List<Artist> getRecommendedArtists() {
+    if (recomendedArtists.isEmpty) {
+      recomendedArtists = getRandomArtists(count: 20);
+    }
+
+    return recomendedArtists;
+  }
+  List<Song> getRecommendedSongs() {
+    if (recomendedSongs.isEmpty) {
+      recomendedSongs = getRandomSongs(count: 20);
+    }
+
+    return recomendedSongs;
+  }
+
   //    _____
   //   |_   _|
   //     | |  _ __ ___   __ _  __ _  ___  ___
@@ -612,8 +623,7 @@ class JellyfinAPI extends ChangeNotifier {
 
   Future<File> _fileImage(String filename) async {
     Directory dir = await getApplicationDocumentsDirectory();
-    Directory subDir =
-        await Directory('${dir.path}/cachedImages').create(recursive: true);
+    Directory subDir = await Directory('${dir.path}/cachedImages').create(recursive: true);
     String pathName = '${subDir.path}/$filename';
     return File(pathName);
   }

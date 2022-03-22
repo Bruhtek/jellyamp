@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jellyamp/screens/player/floating_player.dart';
 import 'package:jellyamp/screens/setup/setup.dart';
+
 import '../main.dart';
 
 import 'home/home.dart';
 import 'music/music.dart';
 import 'settings/settings.dart';
 import 'debug/debug.dart';
+import 'subscreens/albuminfo.dart';
 
 const bool debug = false;
 
@@ -30,10 +32,8 @@ class _IndexScreenState extends ConsumerState<IndexScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final loggedIn =
-        ref.watch(jellyfinAPIProvider.select((value) => value.loggedIn));
-    final initialized =
-        ref.watch(jellyfinAPIProvider.select((value) => value.initialized));
+    final loggedIn = ref.watch(jellyfinAPIProvider.select((value) => value.loggedIn));
+    final initialized = ref.watch(jellyfinAPIProvider.select((value) => value.initialized));
 
     if (!initialized) {
       return const MaterialApp(
@@ -48,16 +48,23 @@ class _IndexScreenState extends ConsumerState<IndexScreen> {
     }
 
     return MaterialApp(
-      home: Scaffold(
-        //pages[index],
+      title: 'Jellyamp',
+      home: indexRoute(),
+      routes: {
+        '/albumInfo': (context) => AlbumInfo(),
+      },
+    );
+  }
+
+  Widget indexRoute() => Scaffold(
         body: pages[index],
         bottomNavigationBar: _navigationBar(),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton:
-            const Align(child: FloatingPlayer(), alignment: Alignment(1, 1.05)),
-      ),
-    );
-  }
+        floatingActionButton: const Align(
+          child: FloatingPlayer(),
+          alignment: Alignment(1, 1.05),
+        ),
+      );
 
   NavigationBar _navigationBar() {
     List<NavigationDestination> dest = <NavigationDestination>[

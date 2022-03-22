@@ -85,6 +85,7 @@ class HomeScreen extends ConsumerWidget {
                     albumCover(album, ref),
                     album.title,
                     album.artistNames.join(', '),
+                    onClick: () => Navigator.pushNamed(context, '/albumInfo', arguments: album),
                   );
                 },
               ),

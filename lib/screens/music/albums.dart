@@ -23,14 +23,17 @@ class AlbumsScreen extends ConsumerWidget {
           crossAxisCount: crossAxisCount,
           childAspectRatio: 1.0,
         ),
-        itemCount:
-            ref.watch(jellyfinAPIProvider.select((value) => value.albumsCount)),
+        itemCount: ref.watch(jellyfinAPIProvider.select((value) => value.albumsCount)),
         itemBuilder: (context, index) {
-          final album = ref.watch(
-              jellyfinAPIProvider.select((value) => value.getAlbums()[index]));
+          final album = ref.watch(jellyfinAPIProvider.select((value) => value.getAlbums()[index]));
 
-          return gridItem(context, albumCover(album, ref), album.title,
-              album.artistNames.join(', '));
+          return gridItem(
+            context,
+            albumCover(album, ref),
+            album.title,
+            album.artistNames.join(', '),
+            onClick: () => Navigator.pushNamed(context, '/albumInfo', arguments: album),
+          );
         },
       ),
     );

@@ -8,8 +8,9 @@ Widget gridItem(
   BuildContext context,
   Widget background,
   String title,
-  String? subtitle,
-) {
+  String? subtitle, {
+  Function? onClick,
+}) {
   List<Widget> gridStack = [];
 
   gridStack.add(
@@ -77,6 +78,15 @@ Widget gridItem(
     ),
   );
 
+  // add a click handler if one is provided
+  gridStack.add(Positioned.fill(
+    child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => onClick?.call(),
+        )),
+  ));
+
   return ClipRRect(
     borderRadius: BorderRadius.circular(8.0),
     child: GridTile(
@@ -92,67 +102,74 @@ Widget gridItem(
 }
 
 Widget albumCover(Album album, WidgetRef ref) {
-  return FutureBuilder<Widget>(
-    future: ref.read(jellyfinAPIProvider).itemImage(
-          item: album,
-          alternative: const Center(
-            child: Icon(
-              Icons.album_rounded,
-              size: 72,
-              color: Colors.black54,
+  return Hero(
+    tag: 'imageTag' + album.id,
+    child: FutureBuilder<Widget>(
+      future: ref.read(jellyfinAPIProvider).itemImage(
+            item: album,
+            alternative: const Center(
+              child: Icon(
+                Icons.album_rounded,
+                size: 72,
+                color: Colors.black54,
+              ),
             ),
           ),
-        ),
-    builder: (context, snapshot) {
-      if (snapshot.hasData) {
-        return snapshot.data!;
-      }
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return snapshot.data!;
+        }
 
-      return Container();
-    },
+        return Container();
+      },
+    ),
   );
 }
-
 Widget artistCover(Artist artist, WidgetRef ref) {
-  return FutureBuilder<Widget>(
-    future: ref.read(jellyfinAPIProvider).itemImage(
-          item: artist,
-          alternative: const Center(
-            child: Icon(
-              Icons.person_rounded,
-              size: 72,
-              color: Colors.black54,
+  return Hero(
+    tag: 'imageTag' + artist.id,
+    child: FutureBuilder<Widget>(
+      future: ref.read(jellyfinAPIProvider).itemImage(
+            item: artist,
+            alternative: const Center(
+              child: Icon(
+                Icons.person_rounded,
+                size: 72,
+                color: Colors.black54,
+              ),
             ),
           ),
-        ),
-    builder: (context, snapshot) {
-      if (snapshot.hasData) {
-        return snapshot.data!;
-      }
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return snapshot.data!;
+        }
 
-      return Container();
-    },
+        return Container();
+      },
+    ),
   );
 }
-
 Widget songCover(Song song, WidgetRef ref) {
-  return FutureBuilder<Widget>(
-    future: ref.read(jellyfinAPIProvider).itemImage(
-          item: song,
-          alternative: const Center(
-            child: Icon(
-              Icons.music_note_rounded,
-              size: 72,
-              color: Colors.black54,
+  return Hero(
+    tag: 'imageTag' + song.id,
+    child: FutureBuilder<Widget>(
+      future: ref.read(jellyfinAPIProvider).itemImage(
+            item: song,
+            alternative: const Center(
+              child: Icon(
+                Icons.music_note_rounded,
+                size: 72,
+                color: Colors.black54,
+              ),
             ),
           ),
-        ),
-    builder: (context, snapshot) {
-      if (snapshot.hasData) {
-        return snapshot.data!;
-      }
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return snapshot.data!;
+        }
 
-      return Container();
-    },
+        return Container();
+      },
+    ),
   );
 }
