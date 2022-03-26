@@ -11,25 +11,34 @@ class ArtistsScreen extends ConsumerWidget {
   ArtistsScreen(this.toggleSelecting, {Key? key}) : super(key: key);
 
   Function toggleSelecting;
+  final ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4.0),
+    return Scrollbar(
+      controller: scrollController,
+      isAlwaysShown: true,
+      interactive: true,
       child: GridView.builder(
+        controller: scrollController,
+        padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           mainAxisSpacing: 8,
           crossAxisSpacing: 8,
           crossAxisCount: crossAxisCount,
           childAspectRatio: 1.0,
         ),
-        itemCount: ref
-            .watch(jellyfinAPIProvider.select((value) => value.artistsCount)),
+        itemCount: ref.watch(jellyfinAPIProvider.select((value) => value.artistsCount)),
         itemBuilder: (context, index) {
-          final artist = ref.watch(
-              jellyfinAPIProvider.select((value) => value.getArtists()[index]));
+          final artist =
+              ref.watch(jellyfinAPIProvider.select((value) => value.getArtists()[index]));
 
-          return gridItem(context, artistCover(artist, ref), artist.name, null);
+          return gridItem(
+            context,
+            artistCover(artist, ref),
+            artist.name,
+            null,
+          );
         },
       ),
     );

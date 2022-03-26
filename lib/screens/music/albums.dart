@@ -11,12 +11,17 @@ class AlbumsScreen extends ConsumerWidget {
   AlbumsScreen(this.toggleSelecting, {Key? key}) : super(key: key);
 
   Function toggleSelecting;
+  final ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4.0),
+    return Scrollbar(
+      controller: scrollController,
+      isAlwaysShown: true,
+      interactive: true,
       child: GridView.builder(
+        controller: scrollController,
+        padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           mainAxisSpacing: 8,
           crossAxisSpacing: 8,
