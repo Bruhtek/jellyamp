@@ -621,6 +621,9 @@ class JellyfinAPI extends ChangeNotifier {
   //                           __/ |
   //                          |___/
 
+  // the key is the image Url, to avoid any potential duplicates
+  Map<String, ImageProvider> cachedImages = {};
+
   Future<File> _fileImage(String filename) async {
     Directory dir = await getApplicationDocumentsDirectory();
     Directory subDir = await Directory('${dir.path}/cachedImages').create(recursive: true);
@@ -632,11 +635,15 @@ class JellyfinAPI extends ChangeNotifier {
     required String imageFilename,
     required String imageUrl,
   }) async {
-    return NetworkToFileImage(
+    final image = NetworkToFileImage(
       url: imageUrl,
       file: await _fileImage(imageFilename),
       headers: reqHeaders,
     );
+
+    cachedImages[imageUrl] = image;
+
+    return image;
   }
 
   String? _imageTagUrl({
@@ -649,6 +656,62 @@ class JellyfinAPI extends ChangeNotifier {
         '$_jellyfinUrl/Items/$itemId/Images/Primary?tag=$primaryImageTag&maxWidth=$maxWidth&maxHeight=$maxHeight';
 
     return url;
+  }
+
+  Widget futureItemImage({
+    required dynamic item,
+    BoxFit fit = BoxFit.cover,
+    int maxWidth = 256,
+    int maxHeight = 256,
+    Widget alternative = const SizedBox(),
+  }) {
+    String? imageTag;
+    String itemId;
+
+    if (item is Album) {
+      imageTag = item.primaryImageTag;
+      itemId = item.id;
+    } else if (item is Artist) {
+      imageTag = item.primaryImageTag;
+      itemId = item.id;
+    } else if (item is Song) {
+      imageTag = item.albumPrimaryImageTag;
+      itemId = item.id;
+    } else {
+      return alternative;
+    }
+
+    if (imageTag == null) {
+      return alternative;
+    }
+
+    final String url = _imageTagUrl(
+      primaryImageTag: imageTag,
+      itemId: itemId,
+      maxHeight: maxHeight,
+      maxWidth: maxWidth,
+    )!;
+
+    if (cachedImages.containsKey(url)) {
+      return Image(image: cachedImages[url]!);
+    }
+
+    return FutureBuilder<Widget>(
+      future: itemImage(
+        item: item,
+        alternative: alternative,
+        maxHeight: maxHeight,
+        maxWidth: maxWidth,
+        fit: fit,
+      ),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return snapshot.data!;
+        }
+
+        return Container();
+      },
+    );
   }
 
   Future<Widget> itemImage({

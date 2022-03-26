@@ -104,72 +104,45 @@ Widget gridItem(
 Widget albumCover(Album album, WidgetRef ref) {
   return Hero(
     tag: 'imageTag' + album.id,
-    child: FutureBuilder<Widget>(
-      future: ref.read(jellyfinAPIProvider).itemImage(
-            item: album,
-            alternative: const Center(
-              child: Icon(
-                Icons.album_rounded,
-                size: 72,
-                color: Colors.black54,
-              ),
+    child: ref.read(jellyfinAPIProvider).futureItemImage(
+          item: album,
+          alternative: const Center(
+            child: Icon(
+              Icons.album_rounded,
+              size: 72,
+              color: Colors.black54,
             ),
           ),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return snapshot.data!;
-        }
-
-        return Container();
-      },
-    ),
+        ),
   );
 }
 Widget artistCover(Artist artist, WidgetRef ref) {
   return Hero(
     tag: 'imageTag' + artist.id,
-    child: FutureBuilder<Widget>(
-      future: ref.read(jellyfinAPIProvider).itemImage(
-            item: artist,
-            alternative: const Center(
-              child: Icon(
-                Icons.person_rounded,
-                size: 72,
-                color: Colors.black54,
-              ),
+    child: ref.read(jellyfinAPIProvider).futureItemImage(
+          item: artist,
+          alternative: const Center(
+            child: Icon(
+              Icons.person_rounded,
+              size: 72,
+              color: Colors.black54,
             ),
           ),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return snapshot.data!;
-        }
-
-        return Container();
-      },
-    ),
+        ),
   );
 }
 Widget songCover(Song song, WidgetRef ref) {
   return Hero(
     tag: 'imageTag' + song.id,
-    child: FutureBuilder<Widget>(
-      future: ref.read(jellyfinAPIProvider).itemImage(
-            item: song,
-            alternative: const Center(
-              child: Icon(
-                Icons.music_note_rounded,
-                size: 72,
-                color: Colors.black54,
-              ),
+    child: ref.read(jellyfinAPIProvider).futureItemImage(
+          item: song,
+          alternative: const Center(
+            child: Icon(
+              Icons.music_note_rounded,
+              size: 72,
+              color: Colors.black54,
             ),
           ),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return snapshot.data!;
-        }
-
-        return Container();
-      },
-    ),
+        ),
   );
 }
