@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:network_to_file_image/network_to_file_image.dart';
@@ -194,8 +195,8 @@ class JellyfinAPI extends ChangeNotifier {
     if (settingsReadCorrectly) {
       bool authenticated = await _checkAuthenticated();
       if (authenticated) {
-        loggedIn = true;
         await fetchData();
+        loggedIn = true;
       } else {
         wrongAuth = true;
       }
@@ -381,67 +382,37 @@ class JellyfinAPI extends ChangeNotifier {
 
   /// all 3 return null in case of an error
   Future<Map<String, Album>?> _fetchAlbums() async {
-    Map<String, Album> albums = {};
-
     var response = await http.get(
       Uri.parse('$_jellyfinUrl/Users/$_userId/Items?includeItemTypes=MusicAlbum&recursive=true'),
       headers: reqHeaders,
     );
 
     if (response.statusCode == 200) {
-      final int albumCount = jsonDecode(response.body)['TotalRecordCount'];
-
-      for (int i = 0; i < albumCount; i++) {
-        Album temp = Album.fromJson(jsonDecode(response.body)['Items'][i]);
-
-        albums[temp.id] = temp;
-      }
-
-      return albums;
+      return compute(_sortAlbums, response);
     }
 
     return null;
   }
   Future<Map<String, Song>?> _fetchSongs() async {
-    Map<String, Song> songs = {};
-
     var response = await http.get(
       Uri.parse('$_jellyfinUrl/Users/$_userId/Items?includeItemTypes=Audio&recursive=true'),
       headers: reqHeaders,
     );
 
     if (response.statusCode == 200) {
-      final int albumCount = jsonDecode(response.body)['TotalRecordCount'];
-
-      for (int i = 0; i < albumCount; i++) {
-        Song temp = Song.fromJson(jsonDecode(response.body)['Items'][i]);
-
-        songs[temp.id] = temp;
-      }
-
-      return songs;
+      return compute(_sortSongs, response);
     }
 
     return null;
   }
   Future<Map<String, Artist>?> _fetchArtists() async {
-    Map<String, Artist> artists = {};
-
     var response = await http.get(
       Uri.parse('$_jellyfinUrl/Users/$_userId/Items?includeItemTypes=MusicArtist&recursive=true'),
       headers: reqHeaders,
     );
 
     if (response.statusCode == 200) {
-      final int albumCount = jsonDecode(response.body)['TotalRecordCount'];
-
-      for (int i = 0; i < albumCount; i++) {
-        Artist temp = Artist.fromJson(jsonDecode(response.body)['Items'][i]);
-
-        artists[temp.id] = temp;
-      }
-
-      return artists;
+      return compute(_sortArtists, response);
     }
 
     return null;
@@ -758,4 +729,45 @@ class JellyfinAPI extends ChangeNotifier {
       fit: fit,
     );
   }
+}
+
+Map<String, Album> _sortAlbums(dynamic response) {
+  Map<String, Album> albums = {};
+
+  final int albumCount = jsonDecode(response.body)['TotalRecordCount'];
+
+  for (int i = 0; i < albumCount; i++) {
+    Album temp = Album.fromJson(jsonDecode(response.body)['Items'][i]);
+
+    albums[temp.id] = temp;
+  }
+
+  return albums;
+}
+
+Map<String, Song> _sortSongs(dynamic response) {
+  Map<String, Song> songs = {};
+
+  final int albumCount = jsonDecode(response.body)['TotalRecordCount'];
+
+  for (int i = 0; i < albumCount; i++) {
+    Song temp = Song.fromJson(jsonDecode(response.body)['Items'][i]);
+
+    songs[temp.id] = temp;
+  }
+
+  return songs;
+}
+Map<String, Artist> _sortArtists(dynamic response) {
+  Map<String, Artist> artists = {};
+
+  final int albumCount = jsonDecode(response.body)['TotalRecordCount'];
+
+  for (int i = 0; i < albumCount; i++) {
+    Artist temp = Artist.fromJson(jsonDecode(response.body)['Items'][i]);
+
+    artists[temp.id] = temp;
+  }
+
+  return artists;
 }
