@@ -664,7 +664,7 @@ class JellyfinAPI extends ChangeNotifier {
     )!;
 
     if (cachedImages.containsKey(url)) {
-      return Image(image: cachedImages[url]!);
+      return Image(image: cachedImages[url]!, fit: fit);
     }
 
     return FutureBuilder<Widget>(

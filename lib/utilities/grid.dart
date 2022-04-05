@@ -22,7 +22,7 @@ Widget gridItem(
           colors: [
             Colors.transparent,
             Colors.transparent,
-            Colors.black54,
+            Colors.black45,
             Colors.black54,
           ],
           stops: [0.0, 0.7, 0.9, 1.0],
@@ -101,7 +101,26 @@ Widget gridItem(
   );
 }
 
-Widget albumCover(Album album, WidgetRef ref) {
+Widget albumCover(Album album, WidgetRef ref, {bool rounded = false}) {
+  if (rounded) {
+    return Hero(
+      tag: 'imageTag' + album.id,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8.0),
+        child: ref.read(jellyfinAPIProvider).futureItemImage(
+              item: album,
+              alternative: const Center(
+                child: Icon(
+                  Icons.album_rounded,
+                  size: 72,
+                  color: Colors.black54,
+                ),
+              ),
+            ),
+      ),
+    );
+  }
+
   return Hero(
     tag: 'imageTag' + album.id,
     child: ref.read(jellyfinAPIProvider).futureItemImage(
