@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jellyamp/screens/player/floating_player.dart';
-import 'package:jellyamp/screens/setup/setup.dart';
 
 import '../main.dart';
 
@@ -10,6 +9,7 @@ import 'music/music.dart';
 import 'settings/settings.dart';
 import 'debug/debug.dart';
 import 'subscreens/albuminfo.dart';
+import 'setup/setup.dart';
 
 const bool debug = false;
 
