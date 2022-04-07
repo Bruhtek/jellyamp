@@ -112,10 +112,13 @@ Widget comfortableGridItem(
       aspectRatio: 1 / 1,
       child: background,
     ),
+    const SizedBox(height: 8.0),
     Text(
       title,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 15,
+        color: Theme.of(context).colorScheme.primary,
+        fontWeight: FontWeight.w600,
       ),
       textAlign: TextAlign.center,
     ),
@@ -125,8 +128,10 @@ Widget comfortableGridItem(
     columnWidgets.add(
       Text(
         subtitle,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 12,
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
+          fontWeight: FontWeight.w300,
         ),
         textAlign: TextAlign.center,
       ),
