@@ -24,7 +24,7 @@ void main() async {
   final encryptKey = base64Url.decode(encryptionKey);
   await Hive.openBox('encrypted', encryptionCipher: HiveAesCipher(encryptKey));*/
   await Hive.openBox('encrypted');
-  await Hive.openBox('preferences');
+  await Hive.openBox<Map<dynamic, dynamic>>('preferences');
   await Hive.openLazyBox('musicData');
 
   runApp(const ProviderScope(child: IndexScreen()));
