@@ -45,7 +45,7 @@ class SettingsScreen extends StatelessWidget {
         WidgetBuilder builder;
         switch (settings.name) {
           case "/appearance":
-            builder = (BuildContext context) => AppearanceSettings();
+            builder = (BuildContext context) => const AppearanceSettings();
             break;
           default:
             builder = (BuildContext context) => index(context);

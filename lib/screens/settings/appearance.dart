@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class AppearanceSettings extends ConsumerStatefulWidget {
-  AppearanceSettings({Key? key}) : super(key: key);
+  const AppearanceSettings({Key? key}) : super(key: key);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _AppearanceSettingsState();

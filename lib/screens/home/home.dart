@@ -31,143 +31,155 @@ class HomeScreen extends ConsumerWidget {
     ).createShader(rect);
   }
 
-  Widget stylishHomeText(String text) {
+  Widget stylishHomeText(BuildContext context, String text) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Text(
         text,
-        style: const TextStyle(
-          fontSize: 24.0,
-        ),
+        style: Theme.of(context).textTheme.headline6!.copyWith(
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.0,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+            ),
       ),
     );
   }
 
-  Widget placeHolderContainer() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8.0),
-      child: Container(
-        color: Colors.black12,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.info_outline,
-              color: Colors.blue,
-              size: 100,
-            ),
-            stylishHomeText('Placeholder'),
-          ],
-        ),
+  Widget placeHolderContainer(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        color: Theme.of(context).colorScheme.onSecondary,
+      ),
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.info_outline,
+            color: Colors.blue,
+            size: 100,
+          ),
+          stylishHomeText(context, 'Placeholder'),
+        ],
       ),
     );
   }
   Widget rediscoverAlbums(BuildContext context, WidgetRef ref, int count) {
     List<Album> albums = ref.read(jellyfinAPIProvider).getRecommendedAlbums();
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8.0),
-      child: Container(
-        color: Colors.black12,
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            stylishHomeText("Rediscover Albums"),
-            SizedBox(
-              height: 120.0,
-              child: ShaderMask(
-                shaderCallback: (Rect rect) => fadeInOut(rect),
-                blendMode: BlendMode.dstOut,
-                child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  separatorBuilder: ((context, index) => Container(width: 4.0)),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: count,
-                  itemBuilder: (context, index) {
-                    final Album album = albums[index];
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        color: Theme.of(context).colorScheme.onSecondary,
+      ),
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 4.0),
+          stylishHomeText(context, "Rediscover Albums"),
+          const SizedBox(height: 8.0),
+          SizedBox(
+            height: 120.0,
+            child: ShaderMask(
+              shaderCallback: (Rect rect) => fadeInOut(rect),
+              blendMode: BlendMode.dstOut,
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                separatorBuilder: ((context, index) => Container(width: 4.0)),
+                scrollDirection: Axis.horizontal,
+                itemCount: count,
+                itemBuilder: (context, index) {
+                  final Album album = albums[index];
 
-                    return gridItem(
-                      context,
-                      albumCover(album, ref),
-                      album.title,
-                      album.artistNames.join(', '),
-                      onClick: () => Navigator.pushNamed(context, '/albumInfo', arguments: album),
-                    );
-                  },
-                ),
+                  return gridItem(
+                    context,
+                    albumCover(album, ref),
+                    album.title,
+                    album.artistNames.join(', '),
+                    onClick: () => Navigator.pushNamed(context, '/albumInfo', arguments: album),
+                  );
+                },
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
   Widget rediscoverArtists(BuildContext context, WidgetRef ref, int count) {
     List<Artist> artists = ref.read(jellyfinAPIProvider).getRecommendedArtists();
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8.0),
-      child: Container(
-        color: Colors.black12,
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            stylishHomeText("Rediscover Artists"),
-            SizedBox(
-              height: 120.0,
-              child: ShaderMask(
-                shaderCallback: (Rect rect) => fadeInOut(rect),
-                blendMode: BlendMode.dstOut,
-                child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  separatorBuilder: ((context, index) => Container(width: 4.0)),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: count,
-                  itemBuilder: (context, index) {
-                    final Artist artist = artists[index];
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        color: Theme.of(context).colorScheme.onSecondary,
+      ),
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 4.0),
+          stylishHomeText(context, "Rediscover Artists"),
+          const SizedBox(height: 8.0),
+          SizedBox(
+            height: 120.0,
+            child: ShaderMask(
+              shaderCallback: (Rect rect) => fadeInOut(rect),
+              blendMode: BlendMode.dstOut,
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                separatorBuilder: ((context, index) => Container(width: 4.0)),
+                scrollDirection: Axis.horizontal,
+                itemCount: count,
+                itemBuilder: (context, index) {
+                  final Artist artist = artists[index];
 
-                    return gridItem(context, artistCover(artist, ref), artist.name, null);
-                  },
-                ),
+                  return gridItem(context, artistCover(artist, ref), artist.name, null);
+                },
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
   Widget rediscoverSongs(BuildContext context, WidgetRef ref, int count) {
     List<Song> songs = ref.read(jellyfinAPIProvider).getRecommendedSongs();
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8.0),
-      child: Container(
-        color: Colors.black12,
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            stylishHomeText("Rediscover Songs"),
-            SizedBox(
-              height: 120.0,
-              child: ShaderMask(
-                shaderCallback: (Rect rect) => fadeInOut(rect),
-                blendMode: BlendMode.dstOut,
-                child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  separatorBuilder: ((context, index) => Container(width: 4.0)),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: count,
-                  itemBuilder: (context, index) {
-                    final Song song = songs[index];
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        color: Theme.of(context).colorScheme.onSecondary,
+      ),
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 4.0),
+          stylishHomeText(context, "Rediscover Songs"),
+          const SizedBox(height: 8.0),
+          SizedBox(
+            height: 120.0,
+            child: ShaderMask(
+              shaderCallback: (Rect rect) => fadeInOut(rect),
+              blendMode: BlendMode.dstOut,
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                separatorBuilder: ((context, index) => Container(width: 4.0)),
+                scrollDirection: Axis.horizontal,
+                itemCount: count,
+                itemBuilder: (context, index) {
+                  final Song song = songs[index];
 
-                    return gridItem(
-                        context, songCover(song, ref), song.title, song.artistNames.join(', '));
-                  },
-                ),
+                  return gridItem(
+                      context, songCover(song, ref), song.title, song.artistNames.join(', '));
+                },
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -176,14 +188,20 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     List<Widget> homeWidgets = [];
 
-    homeWidgets.add(placeHolderContainer());
+    homeWidgets.add(placeHolderContainer(context));
     homeWidgets.add(rediscoverAlbums(context, ref, 20));
     homeWidgets.add(rediscoverArtists(context, ref, 20));
     homeWidgets.add(rediscoverSongs(context, ref, 20));
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Jellyamp"),
+        elevation: 0.0,
+        title: Text("Jellyamp",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.9,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+            )),
       ),
       body: ListView.separated(
         padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
