@@ -39,7 +39,7 @@ class AlbumsScreen extends ConsumerWidget {
             case 0: // compact
               return gridItem(
                 context,
-                albumCover(album, ref, rounded: true),
+                albumCover(album, ref, context, rounded: true),
                 album.title,
                 album.artistNames.join(', '),
                 onClick: () => Navigator.pushNamed(context, '/albumInfo', arguments: album),
@@ -47,7 +47,7 @@ class AlbumsScreen extends ConsumerWidget {
             case 1:
               return comfortableGridItem(
                 context,
-                albumCover(album, ref, rounded: true),
+                albumCover(album, ref, context, rounded: true),
                 album.title,
                 album.artistNames.join(', '),
                 onClick: () => Navigator.pushNamed(context, '/albumInfo', arguments: album),

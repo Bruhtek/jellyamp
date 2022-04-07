@@ -39,7 +39,7 @@ class ArtistsScreen extends ConsumerWidget {
             case 0: // compact
               return gridItem(
                 context,
-                artistCover(artist, ref),
+                artistCover(artist, ref, context),
                 artist.name,
                 null,
               );
@@ -48,7 +48,7 @@ class ArtistsScreen extends ConsumerWidget {
                   PreferencesStorage.getPreference("appearance", "useOvalArtistImages") == "true";
               return comfortableGridItem(
                 context,
-                artistCover(artist, ref, oval: oval, rounded: !oval),
+                artistCover(artist, ref, context, oval: oval, rounded: !oval),
                 artist.name,
                 null,
               );

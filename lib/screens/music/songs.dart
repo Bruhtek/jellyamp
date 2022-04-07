@@ -38,14 +38,14 @@ class SongsScreen extends ConsumerWidget {
             case 0: // compact
               return gridItem(
                 context,
-                songCover(song, ref),
+                songCover(song, ref, context),
                 song.title,
                 song.artistNames.join(', '),
               );
             case 1:
               return comfortableGridItem(
                 context,
-                songCover(song, ref, rounded: true),
+                songCover(song, ref, context, rounded: true),
                 song.title,
                 song.artistNames.join(', '),
               );

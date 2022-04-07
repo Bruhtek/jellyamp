@@ -95,7 +95,7 @@ class HomeScreen extends ConsumerWidget {
 
                   return gridItem(
                     context,
-                    albumCover(album, ref),
+                    albumCover(album, ref, context),
                     album.title,
                     album.artistNames.join(', '),
                     onClick: () => Navigator.pushNamed(context, '/albumInfo', arguments: album),
@@ -136,7 +136,7 @@ class HomeScreen extends ConsumerWidget {
                 itemBuilder: (context, index) {
                   final Artist artist = artists[index];
 
-                  return gridItem(context, artistCover(artist, ref), artist.name, null);
+                  return gridItem(context, artistCover(artist, ref, context), artist.name, null);
                 },
               ),
             ),
@@ -173,8 +173,8 @@ class HomeScreen extends ConsumerWidget {
                 itemBuilder: (context, index) {
                   final Song song = songs[index];
 
-                  return gridItem(
-                      context, songCover(song, ref), song.title, song.artistNames.join(', '));
+                  return gridItem(context, songCover(song, ref, context), song.title,
+                      song.artistNames.join(', '));
                 },
               ),
             ),

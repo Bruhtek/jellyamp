@@ -31,9 +31,8 @@ Widget gridItem(
       blendMode: BlendMode.srcATop,
       child: AspectRatio(
         aspectRatio: 1 / 1,
-        // TODO STYLES: make [Colors.white] customizable in material themeing
         child: Container(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.onSecondary,
           child: background,
         ),
       ),
@@ -142,7 +141,7 @@ Widget comfortableGridItem(
   );
 }
 
-Widget albumCover(Album album, WidgetRef ref, {bool rounded = false}) {
+Widget albumCover(Album album, WidgetRef ref, BuildContext context, {bool rounded = false}) {
   if (rounded) {
     return Hero(
       tag: 'imageTag' + album.id,
@@ -150,11 +149,11 @@ Widget albumCover(Album album, WidgetRef ref, {bool rounded = false}) {
         borderRadius: BorderRadius.circular(8.0),
         child: ref.read(jellyfinAPIProvider).futureItemImage(
               item: album,
-              alternative: const Center(
+              alternative: Center(
                 child: Icon(
                   Icons.album_rounded,
                   size: 72,
-                  color: Colors.black54,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
               ),
             ),
@@ -166,17 +165,18 @@ Widget albumCover(Album album, WidgetRef ref, {bool rounded = false}) {
     tag: 'imageTag' + album.id,
     child: ref.read(jellyfinAPIProvider).futureItemImage(
           item: album,
-          alternative: const Center(
+          alternative: Center(
             child: Icon(
               Icons.album_rounded,
               size: 72,
-              color: Colors.black54,
+              color: Theme.of(context).colorScheme.secondary,
             ),
           ),
         ),
   );
 }
-Widget artistCover(Artist artist, WidgetRef ref, {bool rounded = false, bool oval = false}) {
+Widget artistCover(Artist artist, WidgetRef ref, BuildContext context,
+    {bool rounded = false, bool oval = false}) {
   if (rounded) {
     return Hero(
       tag: 'imageTag' + artist.id,
@@ -184,11 +184,11 @@ Widget artistCover(Artist artist, WidgetRef ref, {bool rounded = false, bool ova
         borderRadius: BorderRadius.circular(8.0),
         child: ref.read(jellyfinAPIProvider).futureItemImage(
               item: artist,
-              alternative: const Center(
+              alternative: Center(
                 child: Icon(
                   Icons.person_rounded,
                   size: 72,
-                  color: Colors.black54,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
               ),
             ),
@@ -200,16 +200,19 @@ Widget artistCover(Artist artist, WidgetRef ref, {bool rounded = false, bool ova
     return Hero(
       tag: 'imageTag' + artist.id,
       child: ClipOval(
-        child: ref.read(jellyfinAPIProvider).futureItemImage(
-              item: artist,
-              alternative: const Center(
-                child: Icon(
-                  Icons.person_rounded,
-                  size: 72,
-                  color: Colors.black54,
+        child: Container(
+          color: Theme.of(context).colorScheme.onSecondary,
+          child: ref.read(jellyfinAPIProvider).futureItemImage(
+                item: artist,
+                alternative: Center(
+                  child: Icon(
+                    Icons.person_rounded,
+                    size: 72,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
                 ),
               ),
-            ),
+        ),
       ),
     );
   }
@@ -218,17 +221,17 @@ Widget artistCover(Artist artist, WidgetRef ref, {bool rounded = false, bool ova
     tag: 'imageTag' + artist.id,
     child: ref.read(jellyfinAPIProvider).futureItemImage(
           item: artist,
-          alternative: const Center(
+          alternative: Center(
             child: Icon(
               Icons.person_rounded,
               size: 72,
-              color: Colors.black54,
+              color: Theme.of(context).colorScheme.secondary,
             ),
           ),
         ),
   );
 }
-Widget songCover(Song song, WidgetRef ref, {bool rounded = false}) {
+Widget songCover(Song song, WidgetRef ref, BuildContext context, {bool rounded = false}) {
   if (rounded) {
     return Hero(
       tag: 'imageTag' + song.id,
@@ -236,11 +239,11 @@ Widget songCover(Song song, WidgetRef ref, {bool rounded = false}) {
         borderRadius: BorderRadius.circular(8.0),
         child: ref.read(jellyfinAPIProvider).futureItemImage(
               item: song,
-              alternative: const Center(
+              alternative: Center(
                 child: Icon(
                   Icons.music_note_rounded,
                   size: 72,
-                  color: Colors.black54,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
               ),
             ),
@@ -252,11 +255,11 @@ Widget songCover(Song song, WidgetRef ref, {bool rounded = false}) {
     tag: 'imageTag' + song.id,
     child: ref.read(jellyfinAPIProvider).futureItemImage(
           item: song,
-          alternative: const Center(
+          alternative: Center(
             child: Icon(
               Icons.music_note_rounded,
               size: 72,
-              color: Colors.black54,
+              color: Theme.of(context).colorScheme.secondary,
             ),
           ),
         ),

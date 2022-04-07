@@ -11,7 +11,7 @@ class AlbumInfo extends ConsumerWidget {
 
   late Album album;
 
-  Widget albumInfo(WidgetRef ref) {
+  Widget albumInfo(WidgetRef ref, BuildContext context) {
     return SizedBox(
       child: Column(
         children: [
@@ -23,7 +23,7 @@ class AlbumInfo extends ConsumerWidget {
             width: 200,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(24.0),
-              child: albumCover(album, ref),
+              child: albumCover(album, ref, context),
             ),
           ),
           Container(
@@ -48,7 +48,7 @@ class AlbumInfo extends ConsumerWidget {
       itemCount: album.songIds.length + 1,
       itemBuilder: (context, index) {
         if (index == 0) {
-          return albumInfo(ref);
+          return albumInfo(ref, context);
         }
 
         index = index - 1;
@@ -57,7 +57,7 @@ class AlbumInfo extends ConsumerWidget {
         return ListTile(
           leading: AspectRatio(
             aspectRatio: 1.0,
-            child: songCover(song, ref),
+            child: songCover(song, ref, context),
           ),
           title: Text(
             song.title,
