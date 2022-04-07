@@ -43,40 +43,15 @@ class AlbumsScreen extends ConsumerWidget {
                 onClick: () => Navigator.pushNamed(context, '/albumInfo', arguments: album),
               );
             case 1:
-              return InkWell(
-                onTap: () => Navigator.pushNamed(context, '/albumInfo', arguments: album),
-                child: Column(
-                  children: [
-                    AspectRatio(
-                      aspectRatio: 1 / 1,
-                      child: albumCover(album, ref, rounded: true),
-                    ),
-                    Text(
-                      album.title,
-                      style: const TextStyle(
-                        fontSize: 15,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    Text(
-                      album.artistNames.join(', '),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.black87,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              );
-            default:
-              return gridItem(
+              return comfortableGridItem(
                 context,
                 albumCover(album, ref, rounded: true),
                 album.title,
                 album.artistNames.join(', '),
                 onClick: () => Navigator.pushNamed(context, '/albumInfo', arguments: album),
               );
+            default:
+              return null;
           }
         },
       ),

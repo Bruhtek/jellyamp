@@ -101,6 +101,47 @@ Widget gridItem(
   );
 }
 
+Widget comfortableGridItem(
+  BuildContext context,
+  Widget background,
+  String title,
+  String? subtitle, {
+  Function? onClick,
+}) {
+  List<Widget> columnWidgets = [
+    AspectRatio(
+      aspectRatio: 1 / 1,
+      child: background,
+    ),
+    Text(
+      title,
+      style: const TextStyle(
+        fontSize: 15,
+      ),
+      textAlign: TextAlign.center,
+    ),
+  ];
+
+  if (subtitle != null) {
+    columnWidgets.add(
+      Text(
+        subtitle,
+        style: const TextStyle(
+          fontSize: 12,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  return InkWell(
+    onTap: () => onClick?.call(),
+    child: Column(
+      children: columnWidgets,
+    ),
+  );
+}
+
 Widget albumCover(Album album, WidgetRef ref, {bool rounded = false}) {
   if (rounded) {
     return Hero(
@@ -135,7 +176,44 @@ Widget albumCover(Album album, WidgetRef ref, {bool rounded = false}) {
         ),
   );
 }
-Widget artistCover(Artist artist, WidgetRef ref) {
+Widget artistCover(Artist artist, WidgetRef ref, {bool rounded = false, bool oval = false}) {
+  if (rounded) {
+    return Hero(
+      tag: 'imageTag' + artist.id,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8.0),
+        child: ref.read(jellyfinAPIProvider).futureItemImage(
+              item: artist,
+              alternative: const Center(
+                child: Icon(
+                  Icons.person_rounded,
+                  size: 72,
+                  color: Colors.black54,
+                ),
+              ),
+            ),
+      ),
+    );
+  }
+
+  if (oval) {
+    return Hero(
+      tag: 'imageTag' + artist.id,
+      child: ClipOval(
+        child: ref.read(jellyfinAPIProvider).futureItemImage(
+              item: artist,
+              alternative: const Center(
+                child: Icon(
+                  Icons.person_rounded,
+                  size: 72,
+                  color: Colors.black54,
+                ),
+              ),
+            ),
+      ),
+    );
+  }
+
   return Hero(
     tag: 'imageTag' + artist.id,
     child: ref.read(jellyfinAPIProvider).futureItemImage(
@@ -150,7 +228,26 @@ Widget artistCover(Artist artist, WidgetRef ref) {
         ),
   );
 }
-Widget songCover(Song song, WidgetRef ref) {
+Widget songCover(Song song, WidgetRef ref, {bool rounded = false}) {
+  if (rounded) {
+    return Hero(
+      tag: 'imageTag' + song.id,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8.0),
+        child: ref.read(jellyfinAPIProvider).futureItemImage(
+              item: song,
+              alternative: const Center(
+                child: Icon(
+                  Icons.music_note_rounded,
+                  size: 72,
+                  color: Colors.black54,
+                ),
+              ),
+            ),
+      ),
+    );
+  }
+
   return Hero(
     tag: 'imageTag' + song.id,
     child: ref.read(jellyfinAPIProvider).futureItemImage(

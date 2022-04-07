@@ -110,8 +110,8 @@ class _MusicScreenState extends State<MusicScreen> {
           body: TabBarView(
             children: [
               AlbumsScreen(toggleSelecting, displayMode),
-              ArtistsScreen(toggleSelecting),
-              SongsScreen(toggleSelecting),
+              ArtistsScreen(toggleSelecting, displayMode),
+              SongsScreen(toggleSelecting, displayMode),
             ],
           ),
         ));
