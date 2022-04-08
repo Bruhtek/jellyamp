@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class AppearanceSettings extends ConsumerStatefulWidget {
-  AppearanceSettings({Key? key}) : super(key: key);
+  const AppearanceSettings({Key? key}) : super(key: key);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _AppearanceSettingsState();
@@ -47,7 +47,10 @@ class _AppearanceSettingsState extends ConsumerState<AppearanceSettings> {
       body: ListView(
         children: [
           ListTile(
-            title: const Text('Use oval artist images'),
+            title: Text(
+              'Use oval artist images',
+              style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer),
+            ),
             trailing: Switch(
               value: getValue("useOvalArtistImages") == "true" ? true : false,
               onChanged: (value) => setValue("useOvalArtistImages", value.toString()),

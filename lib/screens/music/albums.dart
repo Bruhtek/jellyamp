@@ -17,27 +17,29 @@ class AlbumsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final albums = ref.watch(jellyfinAPIProvider.select((value) => value.getAlbums()));
+
     return Scrollbar(
       controller: scrollController,
       isAlwaysShown: true,
       interactive: true,
       child: AlignedGridView.count(
-        addAutomaticKeepAlives: false,
+        addAutomaticKeepAlives: true,
         controller: scrollController,
         crossAxisCount: crossAxisCount,
         crossAxisSpacing: 8.0,
         mainAxisSpacing: 8.0,
         padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
-        itemCount: ref.watch(jellyfinAPIProvider.select((value) => value.albumsCount)),
+        itemCount: albums.length,
         itemBuilder: (context, index) {
-          final album = ref.watch(jellyfinAPIProvider.select((value) => value.getAlbums()[index]));
+          final album = albums[index];
 
           // compact = 0, comfortable = 1
           switch (displayMode) {
             case 0: // compact
               return gridItem(
                 context,
-                albumCover(album, ref, rounded: true),
+                albumCover(album, ref, context, rounded: true),
                 album.title,
                 album.artistNames.join(', '),
                 onClick: () => Navigator.pushNamed(context, '/albumInfo', arguments: album),
@@ -45,7 +47,7 @@ class AlbumsScreen extends ConsumerWidget {
             case 1:
               return comfortableGridItem(
                 context,
-                albumCover(album, ref, rounded: true),
+                albumCover(album, ref, context, rounded: true),
                 album.title,
                 album.artistNames.join(', '),
                 onClick: () => Navigator.pushNamed(context, '/albumInfo', arguments: album),

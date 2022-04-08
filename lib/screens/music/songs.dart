@@ -17,6 +17,8 @@ class SongsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final songs = ref.watch(jellyfinAPIProvider.select((value) => value.getSongs()));
+
     return Scrollbar(
       controller: scrollController,
       isAlwaysShown: true,
@@ -28,22 +30,22 @@ class SongsScreen extends ConsumerWidget {
         crossAxisSpacing: 8.0,
         mainAxisSpacing: 8.0,
         padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
-        itemCount: ref.watch(jellyfinAPIProvider.select((value) => value.songsCount)),
+        itemCount: songs.length,
         itemBuilder: (context, index) {
-          final song = ref.watch(jellyfinAPIProvider.select((value) => value.getSongs()[index]));
+          final song = songs[index];
 
           switch (displayMode) {
             case 0: // compact
               return gridItem(
                 context,
-                songCover(song, ref),
+                songCover(song, ref, context),
                 song.title,
                 song.artistNames.join(', '),
               );
             case 1:
               return comfortableGridItem(
                 context,
-                songCover(song, ref, rounded: true),
+                songCover(song, ref, context, rounded: true),
                 song.title,
                 song.artistNames.join(', '),
               );

@@ -10,22 +10,28 @@ class SettingsScreen extends StatelessWidget {
       body: Container(
         margin: const EdgeInsets.only(top: 16.0),
         child: ListView(
+          physics: const NeverScrollableScrollPhysics(),
           children: [
-            const SizedBox(
+            SizedBox(
               height: 130,
               child: Center(
                 child: Icon(
                   Icons.settings_rounded,
                   size: 128,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
                 ),
               ),
             ),
-            const SizedBox(
+            SizedBox(
               height: 30,
               child: Center(
                 child: Text(
                   "Settings",
-                  style: TextStyle(fontSize: 24),
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
               ),
             ),
@@ -45,7 +51,7 @@ class SettingsScreen extends StatelessWidget {
         WidgetBuilder builder;
         switch (settings.name) {
           case "/appearance":
-            builder = (BuildContext context) => AppearanceSettings();
+            builder = (BuildContext context) => const AppearanceSettings();
             break;
           default:
             builder = (BuildContext context) => index(context);
@@ -61,17 +67,40 @@ Widget cardBuilder(BuildContext context, String title, IconData leading, String?
   return Container(
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(16.0),
-      color: Colors.blue[100],
+      color: Theme.of(context).colorScheme.onSecondary,
     ),
     margin: const EdgeInsets.all(8.0),
-    child: ListTile(
-      leading: SizedBox(
-        height: double.infinity,
-        child: Icon(leading, size: 32),
-      ),
-      title: Text(title),
-      subtitle: subtitle != null ? Text(subtitle) : null,
-      onTap: () => Navigator.of(context).pushNamed('/appearance'),
+    child: Stack(
+      children: [
+        ListTile(
+          leading: SizedBox(
+            height: double.infinity,
+            child: Icon(leading, size: 32, color: Theme.of(context).colorScheme.onPrimaryContainer),
+          ),
+          title: Text(
+            title,
+            style: TextStyle(
+                color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w500),
+          ),
+          subtitle: subtitle != null
+              ? Text(
+                  subtitle,
+                  style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer),
+                )
+              : null,
+        ),
+        Positioned.fill(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16.0),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => Navigator.of(context).pushNamed('/appearance'),
+              ),
+            ),
+          ),
+        ),
+      ],
     ),
   );
 }

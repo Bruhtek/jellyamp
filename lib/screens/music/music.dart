@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jellyamp/utilities/preferences.dart';
+
 import 'albums.dart';
 import 'artists.dart';
 import 'songs.dart';
 
-class MusicScreen extends StatefulWidget {
+class MusicScreen extends ConsumerStatefulWidget {
   const MusicScreen({Key? key}) : super(key: key);
 
   @override
-  State<MusicScreen> createState() => _MusicScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _MusicScreenState();
 }
 
-class _MusicScreenState extends State<MusicScreen> {
+class _MusicScreenState extends ConsumerState<MusicScreen> {
   bool _isSelecting = false;
   int displayMode = 0;
 
@@ -22,6 +25,7 @@ class _MusicScreenState extends State<MusicScreen> {
         return StatefulBuilder(builder: (context, setModalState) {
           void setDisplayMode(int index) {
             setState(() {
+              PreferencesStorage.setPreference("display", "displayMode", index.toString());
               displayMode = index;
             });
             setModalState(() {
@@ -31,21 +35,45 @@ class _MusicScreenState extends State<MusicScreen> {
 
           return Wrap(
             children: [
-              const ListTile(title: Text("Display mode")),
               ListTile(
+                minLeadingWidth: 0,
+                visualDensity: VisualDensity.compact,
+                title: Text(
+                  "Display mode",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              ListTile(
+                minLeadingWidth: 0,
+                visualDensity: VisualDensity.compact,
                 leading: displayMode == 0
                     ? const Icon(Icons.radio_button_on_rounded)
                     : const Icon(Icons.radio_button_off_rounded),
                 selected: displayMode == 0,
-                title: const Text("Compact grid"),
+                title: Text("Compact grid",
+                    style: TextStyle(
+                      color: displayMode == 0
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.onPrimaryContainer,
+                    )),
                 onTap: () => setDisplayMode(0),
               ),
               ListTile(
+                minLeadingWidth: 0,
+                visualDensity: VisualDensity.compact,
                 leading: displayMode == 1
                     ? const Icon(Icons.radio_button_on_rounded)
                     : const Icon(Icons.radio_button_off_rounded),
                 selected: displayMode == 1,
-                title: const Text("Comfortable grid"),
+                title: Text("Comfortable grid",
+                    style: TextStyle(
+                      color: displayMode == 1
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.onPrimaryContainer,
+                    )),
                 onTap: () => setDisplayMode(1),
               ),
             ],
@@ -63,27 +91,42 @@ class _MusicScreenState extends State<MusicScreen> {
 
   @override
   Widget build(BuildContext context) {
+    displayMode = int.tryParse(PreferencesStorage.getPreference("display", "displayMode")) ?? 1;
+
     TabBar tabBar = TabBar(
       isScrollable: false,
+      indicatorSize: TabBarIndicatorSize.label,
+      indicatorColor: Theme.of(context).colorScheme.primary,
+      labelColor: Theme.of(context).colorScheme.primary,
+      unselectedLabelColor: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.7),
       tabs: [
         Tab(
-            child: Row(children: const [
-          Icon(Icons.album_rounded),
-          SizedBox(width: 8),
-          Text("Albums"),
-        ])),
+            child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Icon(Icons.album_rounded),
+            SizedBox(width: 8),
+            Text("Albums"),
+          ],
+        )),
         Tab(
-            child: Row(children: const [
-          Icon(Icons.person_rounded),
-          SizedBox(width: 8),
-          Text("Artists"),
-        ])),
+            child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Icon(Icons.person_rounded),
+            SizedBox(width: 8),
+            Text("Artists"),
+          ],
+        )),
         Tab(
-            child: Row(children: const [
-          Icon(Icons.music_note_rounded),
-          SizedBox(width: 8),
-          Text("Songs"),
-        ])),
+            child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Icon(Icons.music_note_rounded),
+            SizedBox(width: 8),
+            Text("Songs"),
+          ],
+        )),
       ],
     );
 

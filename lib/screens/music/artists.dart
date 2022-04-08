@@ -18,6 +18,8 @@ class ArtistsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final artists = ref.watch(jellyfinAPIProvider.select((value) => value.getArtists()));
+
     return Scrollbar(
       controller: scrollController,
       isAlwaysShown: true,
@@ -29,24 +31,24 @@ class ArtistsScreen extends ConsumerWidget {
         crossAxisSpacing: 8.0,
         mainAxisSpacing: 8.0,
         padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
-        itemCount: ref.watch(jellyfinAPIProvider.select((value) => value.artistsCount)),
+        itemCount: artists.length,
         itemBuilder: (context, index) {
-          final artist =
-              ref.watch(jellyfinAPIProvider.select((value) => value.getArtists()[index]));
+          final artist = artists[index];
 
           switch (displayMode) {
             case 0: // compact
               return gridItem(
                 context,
-                artistCover(artist, ref),
+                artistCover(artist, ref, context),
                 artist.name,
                 null,
               );
             case 1:
-              bool oval = true;
+              bool oval =
+                  PreferencesStorage.getPreference("appearance", "useOvalArtistImages") == "true";
               return comfortableGridItem(
                 context,
-                artistCover(artist, ref, oval: oval, rounded: !oval),
+                artistCover(artist, ref, context, oval: oval, rounded: !oval),
                 artist.name,
                 null,
               );
