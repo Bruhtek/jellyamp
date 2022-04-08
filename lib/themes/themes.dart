@@ -10,6 +10,25 @@ class Themes {
       colorScheme: colorScheme,
       scaffoldBackgroundColor: colorScheme.background,
       textTheme: Theme.of(context).textTheme,
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: colorScheme.background,
+      ),
+      switchTheme: SwitchThemeData(
+        trackColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.disabled)) {
+            return colorScheme.onSurface.withOpacity(0.38);
+          }
+
+          return colorScheme.primary.withOpacity(0.7);
+        }),
+        thumbColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.disabled)) {
+            return colorScheme.onSurface.withOpacity(0.7);
+          }
+
+          return colorScheme.primary;
+        }),
+      ),
     );
   }
 }

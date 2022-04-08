@@ -9,7 +9,7 @@ import 'home/home.dart';
 import 'music/music.dart';
 import 'settings/settings.dart';
 import 'debug/debug.dart';
-import 'subscreens/albuminfo.dart';
+import 'music/subscreens/albuminfo.dart';
 import 'setup/setup.dart';
 import 'player/floating_player.dart';
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -8,6 +9,9 @@ import 'api/jellyfin.dart';
 final jellyfinAPIProvider = ChangeNotifierProvider((ref) => JellyfinAPI());
 
 void main() async {
+  SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+
   await Hive.initFlutter();
   // fed up with secure storage, impossible to develop with
   /*final secureStorage = new FlutterSecureStorage();

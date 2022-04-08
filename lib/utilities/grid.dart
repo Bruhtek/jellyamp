@@ -138,10 +138,21 @@ Widget comfortableGridItem(
     );
   }
 
-  return InkWell(
-    onTap: () => onClick?.call(),
-    child: Column(
-      children: columnWidgets,
+  return ClipRRect(
+    borderRadius: BorderRadius.circular(8.0),
+    child: Stack(
+      children: [
+        Column(
+          children: columnWidgets,
+        ),
+        Positioned.fill(
+            child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => onClick?.call(),
+          ),
+        ))
+      ],
     ),
   );
 }

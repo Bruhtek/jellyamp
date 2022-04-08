@@ -47,7 +47,10 @@ class _AppearanceSettingsState extends ConsumerState<AppearanceSettings> {
       body: ListView(
         children: [
           ListTile(
-            title: const Text('Use oval artist images'),
+            title: Text(
+              'Use oval artist images',
+              style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer),
+            ),
             trailing: Switch(
               value: getValue("useOvalArtistImages") == "true" ? true : false,
               onChanged: (value) => setValue("useOvalArtistImages", value.toString()),
