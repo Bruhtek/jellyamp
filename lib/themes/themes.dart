@@ -15,11 +15,14 @@ class Themes {
       ),
       switchTheme: SwitchThemeData(
         trackColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
+            return colorScheme.primary.withOpacity(0.7);
+          }
           if (states.contains(MaterialState.disabled)) {
             return colorScheme.onSurface.withOpacity(0.38);
           }
 
-          return colorScheme.primary.withOpacity(0.7);
+          return colorScheme.primary.withOpacity(0.3);
         }),
         thumbColor: MaterialStateProperty.resolveWith((states) {
           if (states.contains(MaterialState.disabled)) {
