@@ -42,6 +42,7 @@ class ArtistsScreen extends ConsumerWidget {
                 artistCover(artist, ref, context),
                 artist.name,
                 null,
+                onClick: () => Navigator.pushNamed(context, '/artistInfo', arguments: artist),
               );
             case 1:
               bool oval =
@@ -51,6 +52,7 @@ class ArtistsScreen extends ConsumerWidget {
                 artistCover(artist, ref, context, oval: oval, rounded: !oval),
                 artist.name,
                 null,
+                onClick: () => Navigator.pushNamed(context, '/artistInfo', arguments: artist),
               );
             default:
               return null;

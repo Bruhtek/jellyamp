@@ -10,6 +10,7 @@ import 'music/music.dart';
 import 'settings/settings.dart';
 import 'debug/debug.dart';
 import 'music/subscreens/album_info.dart';
+import 'music/subscreens/artist_info.dart';
 import 'setup/setup.dart';
 import 'player/floating_player.dart';
 
@@ -75,6 +76,7 @@ class _IndexScreenState extends ConsumerState<IndexScreen> {
           home: indexRoute(),
           routes: {
             '/albumInfo': (context) => AlbumInfo(),
+            '/artistInfo': (context) => ArtistInfo(),
           },
         );
       },

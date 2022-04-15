@@ -136,7 +136,13 @@ class HomeScreen extends ConsumerWidget {
                 itemBuilder: (context, index) {
                   final Artist artist = artists[index];
 
-                  return gridItem(context, artistCover(artist, ref, context), artist.name, null);
+                  return gridItem(
+                    context,
+                    artistCover(artist, ref, context),
+                    artist.name,
+                    null,
+                    onClick: () => Navigator.pushNamed(context, '/artistInfo', arguments: artist),
+                  );
                 },
               ),
             ),
