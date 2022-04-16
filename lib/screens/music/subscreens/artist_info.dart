@@ -2,17 +2,30 @@ import 'package:flutter/material.dart';
 //import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../modals.dart';
 import '../albums.dart';
 import '../../../api/jellyfin.dart';
 import '../../../utilities/grid.dart';
 import '../../../utilities/text_height.dart';
 import '../../../utilities/preferences.dart';
 
-// ignore: must_be_immutable
-class ArtistInfo extends ConsumerWidget {
-  ArtistInfo({Key? key}) : super(key: key);
+class ArtistInfo extends ConsumerStatefulWidget {
+  const ArtistInfo({Key? key}) : super(key: key);
 
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _ArtistInfoState();
+}
+
+class _ArtistInfoState extends ConsumerState<ArtistInfo> {
   late Artist artist;
+  int displayMode = 0;
+
+  void setDisplayMode(int index) {
+    setState(() {
+      PreferencesStorage.setPreference("display", "displayMode", index.toString());
+      displayMode = index;
+    });
+  }
 
   Widget albumCoverWidget(WidgetRef ref, BuildContext context) {
     return AspectRatio(
@@ -29,7 +42,7 @@ class ArtistInfo extends ConsumerWidget {
       padding: EdgeInsets.only(
         right: 16.0,
         left: 16.0,
-        top: MediaQuery.of(context).padding.top,
+        top: MediaQuery.of(context).padding.top + kToolbarHeight,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -51,6 +64,8 @@ class ArtistInfo extends ConsumerWidget {
   }
 
   Widget body(WidgetRef ref, BuildContext context) {
+    displayMode = int.tryParse(PreferencesStorage.getPreference("display", "displayMode")) ?? 1;
+
     final nameHeight = artist.name.textHeight(
       TextStyle(
         fontSize: 24,
@@ -68,8 +83,18 @@ class ArtistInfo extends ConsumerWidget {
                 32 +
                 8 +
                 nameHeight +
-                MediaQuery.of(context).padding.top,
+                MediaQuery.of(context).padding.top +
+                kToolbarHeight,
             pinned: true,
+            actions: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.filter_list_rounded),
+                onPressed: () => showModalBottomSheet(
+                  context: context,
+                  builder: (context) => SelectorModalSheet(setDisplayMode),
+                ),
+              ),
+            ],
             flexibleSpace: LayoutBuilder(
               builder: (context, constraints) {
                 bool collapsed = constraints.biggest.height ==
@@ -90,14 +115,14 @@ class ArtistInfo extends ConsumerWidget {
       },
       body: AlbumsScreen(
         () {},
-        int.tryParse(PreferencesStorage.getPreference("display", "displayMode")) ?? 1,
+        displayMode,
         albumIds: artist.albumIds,
       ),
     );
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     artist = ModalRoute.of(context)!.settings.arguments as Artist;
 
     return Scaffold(

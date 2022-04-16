@@ -7,6 +7,8 @@ import 'albums.dart';
 import 'artists.dart';
 import 'songs.dart';
 
+import 'modals.dart';
+
 class MusicScreen extends ConsumerStatefulWidget {
   const MusicScreen({Key? key}) : super(key: key);
 
@@ -21,66 +23,15 @@ class _MusicScreenState extends ConsumerState<MusicScreen> {
   void showSelectorModalSheet() {
     showModalBottomSheet(
       context: context,
-      builder: (context) {
-        return StatefulBuilder(builder: (context, setModalState) {
-          void setDisplayMode(int index) {
-            setState(() {
-              PreferencesStorage.setPreference("display", "displayMode", index.toString());
-              displayMode = index;
-            });
-            setModalState(() {
-              displayMode = index;
-            });
-          }
-
-          return Wrap(
-            children: [
-              ListTile(
-                minLeadingWidth: 0,
-                visualDensity: VisualDensity.compact,
-                title: Text(
-                  "Display mode",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              ListTile(
-                minLeadingWidth: 0,
-                visualDensity: VisualDensity.compact,
-                leading: displayMode == 0
-                    ? const Icon(Icons.radio_button_on_rounded)
-                    : const Icon(Icons.radio_button_off_rounded),
-                selected: displayMode == 0,
-                title: Text("Compact grid",
-                    style: TextStyle(
-                      color: displayMode == 0
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.onPrimaryContainer,
-                    )),
-                onTap: () => setDisplayMode(0),
-              ),
-              ListTile(
-                minLeadingWidth: 0,
-                visualDensity: VisualDensity.compact,
-                leading: displayMode == 1
-                    ? const Icon(Icons.radio_button_on_rounded)
-                    : const Icon(Icons.radio_button_off_rounded),
-                selected: displayMode == 1,
-                title: Text("Comfortable grid",
-                    style: TextStyle(
-                      color: displayMode == 1
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.onPrimaryContainer,
-                    )),
-                onTap: () => setDisplayMode(1),
-              ),
-            ],
-          );
-        });
-      },
+      builder: (context) => SelectorModalSheet(setDisplayMode),
     );
+  }
+
+  void setDisplayMode(int index) {
+    setState(() {
+      PreferencesStorage.setPreference("display", "displayMode", index.toString());
+      displayMode = index;
+    });
   }
 
   void toggleSelecting() {

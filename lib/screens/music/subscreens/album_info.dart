@@ -3,15 +3,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jellyamp/main.dart';
 
+import '../modals.dart';
 import '../../../api/jellyfin.dart';
 import '../../../utilities/grid.dart';
 import '../../../utilities/text_height.dart';
+import '../../../utilities/preferences.dart';
 
-// ignore: must_be_immutable
-class AlbumInfo extends ConsumerWidget {
-  AlbumInfo({Key? key}) : super(key: key);
+class AlbumInfo extends ConsumerStatefulWidget {
+  const AlbumInfo({Key? key}) : super(key: key);
 
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _AlbumInfoState();
+}
+
+class _AlbumInfoState extends ConsumerState<AlbumInfo> {
   late Album album;
+  int displayMode = 0;
+
+  void setDisplayMode(int index) {
+    setState(() {
+      PreferencesStorage.setPreference("display", "displayMode", index.toString());
+      displayMode = index;
+    });
+  }
 
   Widget albumCoverWidget(WidgetRef ref, BuildContext context) {
     return AspectRatio(
@@ -83,6 +97,15 @@ class AlbumInfo extends ConsumerWidget {
                 artistsHeight +
                 MediaQuery.of(context).padding.top,
             pinned: true,
+            actions: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.filter_list_rounded),
+                onPressed: () => showModalBottomSheet(
+                  context: context,
+                  builder: (context) => SelectorModalSheet(setDisplayMode),
+                ),
+              ),
+            ],
             flexibleSpace: LayoutBuilder(
               builder: (context, constraints) {
                 bool collapsed = constraints.biggest.height ==
@@ -140,7 +163,8 @@ class AlbumInfo extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
+    displayMode = int.tryParse(PreferencesStorage.getPreference("display", "displayMode")) ?? 1;
     album = ModalRoute.of(context)!.settings.arguments as Album;
 
     return Scaffold(
