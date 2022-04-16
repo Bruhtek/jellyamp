@@ -3,13 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../main.dart';
 
+// ignore: must_be_immutable
 class SetupScreen extends StatelessWidget {
-  const SetupScreen({Key? key}) : super(key: key);
+  SetupScreen(this.themeData, {Key? key}) : super(key: key);
+
+  ThemeData themeData;
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
+    return MaterialApp(
+      theme: themeData,
+      home: const Scaffold(
         body: LoginScreen(),
       ),
     );

@@ -52,11 +52,13 @@ class _IndexScreenState extends ConsumerState<IndexScreen> {
         final loggedIn = ref.watch(jellyfinAPIProvider.select((value) => value.loggedIn));
         final initialized = ref.watch(jellyfinAPIProvider.select((value) => value.initialized));
 
+        final theme = Themes.createTheme(context, colorScheme: scheme);
+
         if (!initialized) {
           return MaterialApp(
             scrollBehavior: const ScrollBehavior(
                 androidOverscrollIndicator: AndroidOverscrollIndicator.stretch),
-            theme: Themes.createTheme(context, colorScheme: scheme),
+            theme: theme,
             home: const Scaffold(
               body: Center(
                 child: CircularProgressIndicator(),
@@ -66,13 +68,13 @@ class _IndexScreenState extends ConsumerState<IndexScreen> {
         }
 
         if (!loggedIn) {
-          return const SetupScreen();
+          return SetupScreen(theme);
         }
 
         return MaterialApp(
           scrollBehavior:
               const ScrollBehavior(androidOverscrollIndicator: AndroidOverscrollIndicator.stretch),
-          theme: Themes.createTheme(context, colorScheme: scheme),
+          theme: theme,
           title: 'Jellyamp',
           home: indexRoute(),
           routes: {
