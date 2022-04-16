@@ -8,6 +8,7 @@ import '../main.dart';
 import 'home/home.dart';
 import 'music/music.dart';
 import 'settings/settings.dart';
+import 'settings/appearance.dart';
 import 'debug/debug.dart';
 import 'music/subscreens/album_info.dart';
 import 'music/subscreens/artist_info.dart';
@@ -77,6 +78,7 @@ class _IndexScreenState extends ConsumerState<IndexScreen> {
           routes: {
             '/albumInfo': (context) => AlbumInfo(),
             '/artistInfo': (context) => ArtistInfo(),
+            '/settings/appearance': (context) => const AppearanceSettings(),
           },
         );
       },

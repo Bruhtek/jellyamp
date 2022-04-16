@@ -45,21 +45,7 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Navigator(
-      initialRoute: '/',
-      onGenerateRoute: (RouteSettings settings) {
-        WidgetBuilder builder;
-        switch (settings.name) {
-          case "/appearance":
-            builder = (BuildContext context) => const AppearanceSettings();
-            break;
-          default:
-            builder = (BuildContext context) => index(context);
-            break;
-        }
-        return MaterialPageRoute(builder: builder, settings: settings);
-      },
-    );
+    return index(context);
   }
 }
 
@@ -95,7 +81,7 @@ Widget cardBuilder(BuildContext context, String title, IconData leading, String?
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: () => Navigator.of(context).pushNamed('/appearance'),
+                onTap: () => Navigator.of(context).pushNamed('/settings/appearance'),
               ),
             ),
           ),
