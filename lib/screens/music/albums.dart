@@ -4,20 +4,21 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../../main.dart';
 import '../../utilities/grid.dart';
+import '../../utilities/providers/settings.dart';
 import '../../api/jellyfin.dart';
 
 int crossAxisCount = 2;
 
 // ignore: must_be_immutable
 class AlbumsScreen extends ConsumerWidget {
-  AlbumsScreen(this.toggleSelecting, this.displayMode, {this.albumIds, Key? key}) : super(key: key);
+  AlbumsScreen(this.toggleSelecting, {this.albumIds, Key? key}) : super(key: key);
 
   Function toggleSelecting;
-  int displayMode;
   List<String>? albumIds;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    DisplayMode displayMode = ref.watch(settingsProvider.select((value) => value.displayMode));
     List<Album> albums = [];
     if (albumIds != null) {
       for (var i = 0; i < albumIds!.length; i++) {
@@ -42,7 +43,7 @@ class AlbumsScreen extends ConsumerWidget {
 
         // compact = 0, comfortable = 1
         switch (displayMode) {
-          case 0: // compact
+          case DisplayMode.grid: // compact
             return gridItem(
               context,
               albumCover(album, ref, context, rounded: true),
@@ -50,7 +51,7 @@ class AlbumsScreen extends ConsumerWidget {
               album.artistNames.join(', '),
               onClick: () => Navigator.pushNamed(context, '/albumInfo', arguments: album),
             );
-          case 1:
+          case DisplayMode.comfortableGrid:
             return comfortableGridItem(
               context,
               albumCover(album, ref, context, rounded: true),

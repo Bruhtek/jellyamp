@@ -9,6 +9,8 @@ import '../../../utilities/grid.dart';
 import '../../../utilities/text_height.dart';
 import '../../../utilities/preferences.dart';
 
+import '../../../utilities/providers/settings.dart';
+
 class ArtistInfo extends ConsumerStatefulWidget {
   const ArtistInfo({Key? key}) : super(key: key);
 
@@ -18,14 +20,6 @@ class ArtistInfo extends ConsumerStatefulWidget {
 
 class _ArtistInfoState extends ConsumerState<ArtistInfo> {
   late Artist artist;
-  int displayMode = 0;
-
-  void setDisplayMode(int index) {
-    setState(() {
-      PreferencesStorage.setPreference("display", "displayMode", index.toString());
-      displayMode = index;
-    });
-  }
 
   Widget albumCoverWidget(WidgetRef ref, BuildContext context) {
     return AspectRatio(
@@ -63,9 +57,7 @@ class _ArtistInfoState extends ConsumerState<ArtistInfo> {
     );
   }
 
-  Widget body(WidgetRef ref, BuildContext context) {
-    displayMode = int.tryParse(PreferencesStorage.getPreference("display", "displayMode")) ?? 1;
-
+  Widget body(WidgetRef ref, BuildContext context, DisplayMode displayMode) {
     final nameHeight = artist.name.textHeight(
       TextStyle(
         fontSize: 24,
@@ -91,7 +83,7 @@ class _ArtistInfoState extends ConsumerState<ArtistInfo> {
                 icon: const Icon(Icons.filter_list_rounded),
                 onPressed: () => showModalBottomSheet(
                   context: context,
-                  builder: (context) => SelectorModalSheet(setDisplayMode),
+                  builder: (context) => SelectorModalSheet(),
                 ),
               ),
             ],
@@ -115,7 +107,6 @@ class _ArtistInfoState extends ConsumerState<ArtistInfo> {
       },
       body: AlbumsScreen(
         () {},
-        displayMode,
         albumIds: artist.albumIds,
       ),
     );
@@ -123,10 +114,11 @@ class _ArtistInfoState extends ConsumerState<ArtistInfo> {
 
   @override
   Widget build(BuildContext context) {
+    DisplayMode displayMode = ref.watch(settingsProvider.select((value) => value.displayMode));
     artist = ModalRoute.of(context)!.settings.arguments as Artist;
 
     return Scaffold(
-      body: body(ref, context),
+      body: body(ref, context, displayMode),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.pop(context);

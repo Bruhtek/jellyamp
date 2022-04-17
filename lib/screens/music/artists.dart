@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:jellyamp/utilities/preferences.dart';
 
 import '../../main.dart';
 import '../../utilities/grid.dart';
+import '../../utilities/preferences.dart';
+import '../../utilities/providers/settings.dart';
 
 int crossAxisCount = 2;
 
 // ignore: must_be_immutable
 class ArtistsScreen extends ConsumerWidget {
-  ArtistsScreen(this.toggleSelecting, this.displayMode, {Key? key}) : super(key: key);
+  ArtistsScreen(this.toggleSelecting, {Key? key}) : super(key: key);
 
   Function toggleSelecting;
-  int displayMode;
   final ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final displayMode = ref.watch(settingsProvider.select((value) => value.displayMode));
     final artists = ref.watch(jellyfinAPIProvider.select((value) => value.getArtists()));
 
     return Scrollbar(
@@ -36,7 +37,7 @@ class ArtistsScreen extends ConsumerWidget {
           final artist = artists[index];
 
           switch (displayMode) {
-            case 0: // compact
+            case DisplayMode.grid: // compact
               return gridItem(
                 context,
                 artistCover(artist, ref, context),
@@ -44,9 +45,8 @@ class ArtistsScreen extends ConsumerWidget {
                 null,
                 onClick: () => Navigator.pushNamed(context, '/artistInfo', arguments: artist),
               );
-            case 1:
-              bool oval =
-                  PreferencesStorage.getPreference("appearance", "useOvalArtistImages") == "true";
+            case DisplayMode.comfortableGrid:
+              bool oval = ref.watch(settingsProvider.select((value) => value.useOvalArtistImages));
               return comfortableGridItem(
                 context,
                 artistCover(artist, ref, context, oval: oval, rounded: !oval),

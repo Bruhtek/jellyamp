@@ -4,19 +4,20 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../../main.dart';
 import '../../utilities/grid.dart';
+import '../../utilities/providers/settings.dart';
 
 int crossAxisCount = 2;
 
 // ignore: must_be_immutable
 class SongsScreen extends ConsumerWidget {
-  SongsScreen(this.toggleSelecting, this.displayMode, {Key? key}) : super(key: key);
+  SongsScreen(this.toggleSelecting, {Key? key}) : super(key: key);
 
   Function toggleSelecting;
-  int displayMode;
   final ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final displayMode = ref.watch(settingsProvider.select((value) => value.displayMode));
     final songs = ref.watch(jellyfinAPIProvider.select((value) => value.getSongs()));
 
     return Scrollbar(
@@ -35,14 +36,14 @@ class SongsScreen extends ConsumerWidget {
           final song = songs[index];
 
           switch (displayMode) {
-            case 0: // compact
+            case DisplayMode.grid: // compact
               return gridItem(
                 context,
                 songCover(song, ref, context),
                 song.title,
                 song.artistNames.join(', '),
               );
-            case 1:
+            case DisplayMode.comfortableGrid:
               return comfortableGridItem(
                 context,
                 songCover(song, ref, context, rounded: true),

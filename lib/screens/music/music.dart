@@ -18,20 +18,12 @@ class MusicScreen extends ConsumerStatefulWidget {
 
 class _MusicScreenState extends ConsumerState<MusicScreen> {
   bool _isSelecting = false;
-  int displayMode = 0;
 
   void showSelectorModalSheet() {
     showModalBottomSheet(
       context: context,
-      builder: (context) => SelectorModalSheet(setDisplayMode),
+      builder: (context) => SelectorModalSheet(),
     );
-  }
-
-  void setDisplayMode(int index) {
-    setState(() {
-      PreferencesStorage.setPreference("display", "displayMode", index.toString());
-      displayMode = index;
-    });
   }
 
   void toggleSelecting() {
@@ -42,8 +34,6 @@ class _MusicScreenState extends ConsumerState<MusicScreen> {
 
   @override
   Widget build(BuildContext context) {
-    displayMode = int.tryParse(PreferencesStorage.getPreference("display", "displayMode")) ?? 1;
-
     TabBar tabBar = TabBar(
       isScrollable: false,
       indicatorSize: TabBarIndicatorSize.label,
@@ -103,9 +93,9 @@ class _MusicScreenState extends ConsumerState<MusicScreen> {
           appBar: _isSelecting ? appBarSelecting : appBarDefault,
           body: TabBarView(
             children: [
-              AlbumsScreen(toggleSelecting, displayMode),
-              ArtistsScreen(toggleSelecting, displayMode),
-              SongsScreen(toggleSelecting, displayMode),
+              AlbumsScreen(toggleSelecting),
+              ArtistsScreen(toggleSelecting),
+              SongsScreen(toggleSelecting),
             ],
           ),
         ));
