@@ -185,6 +185,9 @@ class JellyfinAPI extends ChangeNotifier {
 
   bool loggedIn = false;
   bool wrongAuth = false;
+  bool checkingAuth = false;
+  bool wrongUrl = false;
+  bool checkingUrl = false;
 
   /// Declares whether the user has finished logging in.
   /// If [loggedIn] is true, also declares whether data has finished loading.
@@ -195,8 +198,8 @@ class JellyfinAPI extends ChangeNotifier {
     if (settingsReadCorrectly) {
       bool authenticated = await _checkAuthenticated();
       if (authenticated) {
-        await fetchData();
         loggedIn = true;
+        await fetchData();
       } else {
         wrongAuth = true;
       }
@@ -252,7 +255,15 @@ class JellyfinAPI extends ChangeNotifier {
     return uri != null && uri.hasAbsolutePath && uri.scheme.startsWith('http');
   }
   Future<bool> login(String username, String password, String url) async {
+    loggedIn = false;
+    wrongAuth = false;
+    checkingAuth = false;
+    wrongUrl = false;
+
+    checkingUrl = true;
     if (_isUrlValid(url)) {
+      checkingUrl = false;
+      checkingAuth = true;
       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
       PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -265,31 +276,69 @@ class JellyfinAPI extends ChangeNotifier {
         "X-Emby-Authorization":
             'MediaBrowser Client="Android", Device="${androidInfo.model}", DeviceId="${androidInfo.androidId}", Version="${packageInfo.version}"',
       };
+      try {
+        final response = await http.post(
+          uri,
+          headers: headers,
+          body: jsonEncode({
+            "Username": username,
+            "Pw": password,
+          }),
+        );
 
-      final response = await http.post(
-        uri,
-        headers: headers,
-        body: jsonEncode({
-          "Username": username,
-          "Pw": password,
-        }),
-      );
+        if (response.statusCode == 200) {
+          final json = jsonDecode(response.body);
+          _userId = json['User']['Id'];
+          _mediaBrowserToken = json['AccessToken'];
+          _jellyfinUrl = url;
 
-      if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-        _userId = json['User']['Id'];
-        _mediaBrowserToken = json['AccessToken'];
-        _jellyfinUrl = url;
+          _saveEnvToDisk();
 
-        _saveEnvToDisk();
-
-        _initialize();
-        return true;
+          checkingAuth = false;
+          _initialize();
+          return true;
+        } else {
+          checkingAuth = false;
+          wrongAuth = true;
+          return false;
+        }
+      } catch (e) {
+        checkingAuth = false;
+        wrongUrl = true;
+        return false;
       }
     }
+    checkingUrl = false;
+    wrongUrl = true;
 
     _initialize();
     return false;
+  }
+
+  /// 0 - nothing,
+  /// 1 - cheking url,
+  /// 2 - wrong url,
+  /// 3 - checking auth,
+  /// 4 - wrong auth,
+  /// 5 - success,
+  Stream<int> loginStatusStream() async* {
+    while (true) {
+      await Future.delayed(const Duration(milliseconds: 100));
+      if (checkingUrl) {
+        yield 1;
+      } else if (wrongUrl) {
+        yield 2;
+      } else if (checkingAuth) {
+        yield 3;
+      } else if (wrongAuth) {
+        yield 4;
+      } else if (loggedIn) {
+        yield 5;
+      } else {
+        yield 0;
+        print("0");
+      }
+    }
   }
 
   void _saveEnvToDisk() {
