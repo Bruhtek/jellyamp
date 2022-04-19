@@ -13,7 +13,7 @@ import 'debug/debug.dart';
 import 'music/subscreens/album_info.dart';
 import 'music/subscreens/artist_info.dart';
 import 'setup/setup.dart';
-import 'player/floating_player.dart';
+import 'player/SlidingPanel.dart';
 
 import '../themes/colorscheme.dart';
 import '../themes/themes.dart';
@@ -78,8 +78,8 @@ class _IndexScreenState extends ConsumerState<IndexScreen> {
           title: 'Jellyamp',
           home: indexRoute(),
           routes: {
-            '/albumInfo': (context) => AlbumInfo(),
-            '/artistInfo': (context) => ArtistInfo(),
+            '/albumInfo': (context) => const AlbumInfo(),
+            '/artistInfo': (context) => const ArtistInfo(),
             '/settings/appearance': (context) => const AppearanceSettings(),
           },
         );
@@ -88,13 +88,11 @@ class _IndexScreenState extends ConsumerState<IndexScreen> {
   }
 
   Widget indexRoute() => Scaffold(
-        body: pages[index],
-        bottomNavigationBar: _navigationBar(),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: const Align(
-          child: FloatingPlayer(),
-          alignment: Alignment(1, 1.05),
+        body: Stack(
+          alignment: Alignment.bottomCenter,
+          children: <Widget>[pages[index], const SlidingPanel()],
         ),
+        bottomNavigationBar: _navigationBar(),
       );
 
   NavigationBar _navigationBar() {
