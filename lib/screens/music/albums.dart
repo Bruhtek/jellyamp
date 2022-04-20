@@ -4,8 +4,8 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../../main.dart';
 import '../../utilities/grid.dart';
-import '../../utilities/providers/settings.dart';
-import '../../api/jellyfin.dart';
+import '../../providers/settings.dart';
+import '../../providers/jellyfin.dart';
 
 int crossAxisCount = 2;
 

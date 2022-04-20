@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../utilities/providers/settings.dart';
+import '../../../providers/settings.dart';
 
 class AppearanceSettings extends ConsumerStatefulWidget {
   const AppearanceSettings({Key? key}) : super(key: key);

@@ -4,11 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../modals.dart';
 import '../albums.dart';
-import '../../../api/jellyfin.dart';
+import '../../../providers/jellyfin.dart';
 import '../../../utilities/grid.dart';
 import '../../../utilities/text_height.dart';
 
-import '../../../utilities/providers/settings.dart';
+import '../../../providers/settings.dart';
 
 class ArtistInfo extends ConsumerStatefulWidget {
   const ArtistInfo({Key? key}) : super(key: key);

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jellyamp/main.dart';
 
 import '../modals.dart';
-import '../../../api/jellyfin.dart';
+import '../../../providers/jellyfin.dart';
 import '../../../utilities/grid.dart';
 import '../../../utilities/text_height.dart';
 import '../../../utilities/preferences.dart';
@@ -42,7 +42,7 @@ class _AlbumInfoState extends ConsumerState<AlbumInfo> {
       padding: EdgeInsets.only(
         right: 16.0,
         left: 16.0,
-        top: MediaQuery.of(context).padding.top,
+        top: MediaQuery.of(context).padding.top + kToolbarHeight,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -95,7 +95,8 @@ class _AlbumInfoState extends ConsumerState<AlbumInfo> {
                 8 +
                 titleHeight +
                 artistsHeight +
-                MediaQuery.of(context).padding.top,
+                MediaQuery.of(context).padding.top +
+                kToolbarHeight,
             pinned: true,
             actions: <Widget>[
               IconButton(

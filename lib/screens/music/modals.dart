@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../utilities/providers/settings.dart';
+import '../../providers/settings.dart';
 
 // ignore: must_be_immutable
 class SelectorModalSheet extends ConsumerStatefulWidget {
@@ -44,7 +44,7 @@ class _SelectorModalSheetState extends ConsumerState<SelectorModalSheet> {
               style: TextStyle(
                 color: displayMode == DisplayMode.grid
                     ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.onPrimaryContainer,
+                    : Theme.of(context).colorScheme.onSecondaryContainer,
               )),
           onTap: () => setDisplayMode(0),
         ),
@@ -59,7 +59,7 @@ class _SelectorModalSheetState extends ConsumerState<SelectorModalSheet> {
               style: TextStyle(
                 color: displayMode == DisplayMode.comfortableGrid
                     ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.onPrimaryContainer,
+                    : Theme.of(context).colorScheme.onSecondaryContainer,
               )),
           onTap: () => setDisplayMode(1),
         ),

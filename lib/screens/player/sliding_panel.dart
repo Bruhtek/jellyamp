@@ -17,7 +17,8 @@ class _FloatingPlayerState extends ConsumerState<SlidingPanel> with TickerProvid
 
   late Animation<Offset> _collapsedOffsetAnimation;
 
-  late double maxHeight = 400.0;
+  late double maxHeight =
+      (MediaQuery.of(context).size.height - kToolbarHeight - kBottomNavigationBarHeight) * 3 / 4;
   late double minHeight = 60.0;
 
   // might come in handly with some scrolling inside the panel?
