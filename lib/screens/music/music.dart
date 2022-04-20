@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jellyamp/utilities/preferences.dart';
 
 import 'albums.dart';
 import 'artists.dart';
@@ -22,7 +21,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> {
   void showSelectorModalSheet() {
     showModalBottomSheet(
       context: context,
-      builder: (context) => SelectorModalSheet(),
+      builder: (context) => const SelectorModalSheet(),
     );
   }
 

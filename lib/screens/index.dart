@@ -13,7 +13,7 @@ import 'debug/debug.dart';
 import 'music/subscreens/album_info.dart';
 import 'music/subscreens/artist_info.dart';
 import 'setup/setup.dart';
-import 'player/SlidingPanel.dart';
+import 'player/sliding_panel.dart';
 
 import '../themes/colorscheme.dart';
 import '../themes/themes.dart';

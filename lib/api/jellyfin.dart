@@ -336,7 +336,6 @@ class JellyfinAPI extends ChangeNotifier {
         yield 5;
       } else {
         yield 0;
-        print("0");
       }
     }
   }

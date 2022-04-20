@@ -7,7 +7,6 @@ import '../albums.dart';
 import '../../../api/jellyfin.dart';
 import '../../../utilities/grid.dart';
 import '../../../utilities/text_height.dart';
-import '../../../utilities/preferences.dart';
 
 import '../../../utilities/providers/settings.dart';
 
@@ -83,7 +82,7 @@ class _ArtistInfoState extends ConsumerState<ArtistInfo> {
                 icon: const Icon(Icons.filter_list_rounded),
                 onPressed: () => showModalBottomSheet(
                   context: context,
-                  builder: (context) => SelectorModalSheet(),
+                  builder: (context) => const SelectorModalSheet(),
                 ),
               ),
             ],

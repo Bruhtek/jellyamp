@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../utilities/preferences.dart';
 import '../../utilities/providers/settings.dart';
 
 // ignore: must_be_immutable
 class SelectorModalSheet extends ConsumerStatefulWidget {
-  SelectorModalSheet({Key? key}) : super(key: key);
+  const SelectorModalSheet({Key? key}) : super(key: key);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _SelectorModalSheetState();

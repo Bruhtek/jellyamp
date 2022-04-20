@@ -102,7 +102,7 @@ class _AlbumInfoState extends ConsumerState<AlbumInfo> {
                 icon: const Icon(Icons.filter_list_rounded),
                 onPressed: () => showModalBottomSheet(
                   context: context,
-                  builder: (context) => SelectorModalSheet(),
+                  builder: (context) => const SelectorModalSheet(),
                 ),
               ),
             ],

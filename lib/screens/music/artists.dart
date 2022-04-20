@@ -4,7 +4,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../../main.dart';
 import '../../utilities/grid.dart';
-import '../../utilities/preferences.dart';
 import '../../utilities/providers/settings.dart';
 
 int crossAxisCount = 2;
