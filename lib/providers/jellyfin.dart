@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -631,6 +632,32 @@ class JellyfinAPI extends ChangeNotifier {
     return recomendedSongs;
   }
 
+  /// returns a [MediaItem] with the data of a song
+  /// returns `null` if the song with specified id doesnt exist
+  Future<MediaItem?> mediaItemFromSongId(String songId) async {
+    Song? song = _songs[songId];
+
+    if (song == null) return null;
+
+    Uri? artUri;
+
+    if (song.albumPrimaryImageTag != null) {
+      //artUri = await getItemImageUri(song.id, song.albumPrimaryImageTag!);
+    }
+
+    return MediaItem(
+      id: songId,
+      title: song.title,
+      artist: song.artistNames.join(', '),
+      album: song.albumId,
+      artUri: artUri,
+    );
+  }
+
+  String getSongDownloadUrl(String songId) {
+    return '$_jellyfinUrl/Items/$songId/Download';
+  }
+
   //    _____
   //   |_   _|
   //     | |  _ __ ___   __ _  __ _  ___  ___
@@ -639,6 +666,15 @@ class JellyfinAPI extends ChangeNotifier {
   //   |_____|_| |_| |_|\__,_|\__, |\___||___/
   //                           __/ |
   //                          |___/
+
+  Future<Uri> getItemImageUri(String itemId, String primaryImageTag) async {
+    final File imageFile = await _fileImage(primaryImageTag + '.img');
+    if (imageFile.existsSync()) {
+      return imageFile.uri;
+    }
+
+    return Uri.parse(_imageTagUrl(primaryImageTag: primaryImageTag, itemId: itemId)!);
+  }
 
   // the key is the image Url, to avoid any potential duplicates
   Map<String, ImageProvider> cachedImages = {};
@@ -792,7 +828,6 @@ Map<String, Album> _sortAlbums(dynamic response) {
 
   return albums;
 }
-
 Map<String, Song> _sortSongs(dynamic response) {
   Map<String, Song> songs = {};
 
