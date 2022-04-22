@@ -51,17 +51,38 @@ class JustAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   PlaybackState _transformEvent(PlaybackEvent event) {
     return PlaybackState(
       controls: [
-        MediaControl.rewind,
-        if (_player.playing) MediaControl.pause else MediaControl.play,
-        MediaControl.stop,
-        MediaControl.fastForward,
+        const MediaControl(
+          androidIcon: "drawable/ic_round_skip_previous_36",
+          label: "Previous",
+          action: MediaAction.skipToPrevious,
+        ),
+        const MediaControl(
+          androidIcon: "drawable/ic_round_stop_36",
+          label: "Stop",
+          action: MediaAction.stop,
+        ),
+        if (_player.playing)
+          const MediaControl(
+            androidIcon: "drawable/ic_round_pause_36",
+            label: "Pause",
+            action: MediaAction.pause,
+          )
+        else
+          const MediaControl(
+            androidIcon: "drawable/ic_round_play_arrow_36",
+            label: "Play",
+            action: MediaAction.play,
+          ),
+        const MediaControl(
+          androidIcon: "drawable/ic_round_skip_next_36",
+          label: "Next",
+          action: MediaAction.skipToNext,
+        ),
       ],
       systemActions: const {
         MediaAction.seek,
-        MediaAction.seekForward,
-        MediaAction.seekBackward,
       },
-      androidCompactActionIndices: const [0, 1, 3],
+      androidCompactActionIndices: _player.playing ? [0, 2, 3] : [1, 2, 3],
       processingState: const {
         ProcessingState.idle: AudioProcessingState.idle,
         ProcessingState.loading: AudioProcessingState.loading,
@@ -85,4 +106,13 @@ class JustAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 
   @override
   Future<void> pause() => _player.pause();
+
+  @override
+  Future<void> skipToPrevious() => _player.seekToPrevious();
+
+  @override
+  Future<void> skipToNext() => _player.seekToNext();
+
+  @override
+  Future<void> seek(Duration position) => _player.seek(position);
 }

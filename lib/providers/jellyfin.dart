@@ -78,12 +78,15 @@ class Song {
   String albumId;
   String albumName;
 
+  Duration duration;
+
   bool isFavorite;
 
   Song({
     required this.id,
     required this.title,
     required this.albumPrimaryImageTag,
+    required this.duration,
     this.artistIds = const [],
     this.artistNames = const [],
     required this.albumId,
@@ -104,6 +107,7 @@ class Song {
       id: json['Id'] as String,
       title: json['Name'] as String,
       albumPrimaryImageTag: json['AlbumPrimaryImageTag'] as String?,
+      duration: Duration(microseconds: (json['RunTimeTicks'] as int) ~/ 10),
       artistIds: artistIds,
       artistNames: artistNames,
       albumId: json['AlbumId'] as String,
@@ -642,12 +646,13 @@ class JellyfinAPI extends ChangeNotifier {
     Uri? artUri;
 
     if (song.albumPrimaryImageTag != null) {
-      //artUri = await getItemImageUri(song.id, song.albumPrimaryImageTag!);
+      artUri = await getItemImageUri(song.id, song.albumPrimaryImageTag!);
     }
 
     return MediaItem(
       id: songId,
       title: song.title,
+      duration: song.duration,
       artist: song.artistNames.join(', '),
       album: song.albumId,
       artUri: artUri,
