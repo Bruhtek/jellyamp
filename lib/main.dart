@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:just_audio/just_audio.dart';
 
 import 'screens/index.dart';
 import 'providers/jellyfin.dart';
@@ -12,6 +13,7 @@ late JellyfinAPI _jellyfinAPI;
 late ChangeNotifierProvider<JellyfinAPI> jellyfinAPIProvider;
 late JustAudioHandler _justAudioHandler;
 late Provider<JustAudioHandler> justAudioProvider;
+late StreamProvider<SequenceState?> sequenceStateProvider;
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(
@@ -34,6 +36,8 @@ void main() async {
     ),
   );
   justAudioProvider = Provider((ref) => _justAudioHandler);
+  sequenceStateProvider =
+      StreamProvider<SequenceState?>((ref) => _justAudioHandler.sequenceStateStream);
 
   // fed up with secure storage, impossible to develop with
   // final secureStorage = new FlutterSecureStorage();

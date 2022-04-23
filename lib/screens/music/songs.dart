@@ -42,6 +42,7 @@ class SongsScreen extends ConsumerWidget {
                 songCover(song, ref, context),
                 song.title,
                 song.artistNames.join(', '),
+                onClick: () => ref.read(justAudioProvider).addOrPlayFromSongId(song.id),
               );
             case DisplayMode.comfortableGrid:
               return comfortableGridItem(
@@ -49,6 +50,7 @@ class SongsScreen extends ConsumerWidget {
                 songCover(song, ref, context, rounded: true),
                 song.title,
                 song.artistNames.join(', '),
+                onClick: () => ref.read(justAudioProvider).addOrPlayFromSongId(song.id),
               );
             default:
               return null;

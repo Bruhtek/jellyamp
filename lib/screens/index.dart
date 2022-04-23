@@ -73,7 +73,7 @@ class _IndexScreenState extends ConsumerState<IndexScreen> {
 
         return MaterialApp(
           scrollBehavior:
-              const ScrollBehavior(androidOverscrollIndicator: AndroidOverscrollIndicator.stretch),
+              const ScrollBehavior(androidOverscrollIndicator: AndroidOverscrollIndicator.glow),
           theme: theme,
           title: 'Jellyamp',
           home: indexRoute(),

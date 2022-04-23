@@ -6,29 +6,91 @@ import 'jellyfin.dart';
 class JustAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   final _player = AudioPlayer();
   late JellyfinAPI jellyfinApi;
+  ConcatenatingAudioSource? concatenatingAudioSource;
 
   JustAudioHandler(JellyfinAPI jellyfinApiProvider) {
     jellyfinApi = jellyfinApiProvider;
     _init();
   }
 
+  List<AudioSource> get itemsFromQueue => queue.value
+      .map(
+        (item) => AudioSource.uri(
+          Uri.parse(jellyfinApi.getSongDownloadUrl(item.id)),
+          headers: jellyfinApi.reqHeaders,
+          tag: item,
+        ),
+      )
+      .toList();
+
+  AudioSource audioSourceFromMediaItem(MediaItem item) => AudioSource.uri(
+        Uri.parse(jellyfinApi.getSongDownloadUrl(item.id)),
+        headers: jellyfinApi.reqHeaders,
+        tag: item,
+      );
+
+  Future<void> addOrPlayFromSongId(String id) {
+    if (_player.playing && concatenatingAudioSource != null) {
+      return addFromSongId(id);
+    }
+    return playFromSongId(id);
+  }
+
+  /// assumes that concatenatingAudioSource is not null
+  Future<void> addFromSongId(String id) async {
+    final item = await jellyfinApi.mediaItemFromSongId(id);
+
+    if (item != null) {
+      queue.add(queue.value + [item]);
+
+      concatenatingAudioSource!.add(audioSourceFromMediaItem(item));
+    }
+  }
+
+  Future<void> playFromSongId(String id) async {
+    final item = await jellyfinApi.mediaItemFromSongId(id);
+
+    if (item != null) {
+      stop();
+      queue.add([item]);
+      mediaItem.add(item);
+    }
+
+    concatenatingAudioSource = ConcatenatingAudioSource(
+      useLazyPreparation: true,
+      shuffleOrder: DefaultShuffleOrder(),
+      children: itemsFromQueue,
+    );
+
+    await _player.setAudioSource(
+      concatenatingAudioSource!,
+      initialIndex: 0,
+      initialPosition: Duration.zero,
+    );
+    play();
+  }
+
   Future<void> playExampleSong() async {
     const exampleSongId = 'b05e92a388f97a7d321b38f92c803f33';
     final exampleSong = await jellyfinApi.mediaItemFromSongId(exampleSongId);
 
-    if (exampleSong != null) queue.add([exampleSong]);
+    if (exampleSong != null) {
+      stop();
+      queue.add([exampleSong]);
+      mediaItem.add(exampleSong);
+    }
 
     try {
-      await _player.setAudioSource(ConcatenatingAudioSource(
-        children: queue.value
-            .map(
-              (item) => AudioSource.uri(
-                Uri.parse(jellyfinApi.getSongDownloadUrl(item.id)),
-                headers: jellyfinApi.reqHeaders,
-              ),
-            )
-            .toList(),
-      ));
+      concatenatingAudioSource = ConcatenatingAudioSource(
+        useLazyPreparation: true,
+        shuffleOrder: DefaultShuffleOrder(),
+        children: itemsFromQueue,
+      );
+      await _player.setAudioSource(
+        concatenatingAudioSource!,
+        initialIndex: 0,
+        initialPosition: Duration.zero,
+      );
       play();
     } catch (e) {
       // ignore: avoid_print
@@ -115,4 +177,6 @@ class JustAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 
   @override
   Future<void> seek(Duration position) => _player.seek(position);
+
+  Stream<SequenceState?> get sequenceStateStream => _player.sequenceStateStream;
 }

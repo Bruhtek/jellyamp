@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jellyamp/main.dart';
 
 import 'collapsed.dart';
 import 'panel.dart';
@@ -52,48 +53,53 @@ class _FloatingPlayerState extends ConsumerState<SlidingPanel> with TickerProvid
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.bottomCenter,
-      children: <Widget>[
-        gestureHandler(
-          child: AnimatedBuilder(
-            animation: _animationController,
-            builder: (context, child) {
-              return Container(
-                color: Colors.red,
-                height: _animationController.value * (maxHeight - minHeight) + minHeight,
-                //margin: const EdgeInsets.only(bottom: kBottomNavigationBarHeight),
-                child: child,
-              );
-            },
-            child: Stack(
-              children: <Widget>[
-                Positioned(
-                  top: 0.0,
-                  width: MediaQuery.of(context).size.width,
-                  child: SizedBox(
-                    height: maxHeight,
-                    child: const Panel(),
+    final sequenceStream = ref.watch(sequenceStateProvider);
+
+    return sequenceStream.maybeWhen(
+      data: (data) => Stack(
+        alignment: Alignment.bottomCenter,
+        children: <Widget>[
+          gestureHandler(
+            child: AnimatedBuilder(
+              animation: _animationController,
+              builder: (context, child) {
+                return Container(
+                  color: Colors.red,
+                  height: _animationController.value * (maxHeight - minHeight) + minHeight,
+                  //margin: const EdgeInsets.only(bottom: kBottomNavigationBarHeight),
+                  child: child,
+                );
+              },
+              child: Stack(
+                children: <Widget>[
+                  Positioned(
+                    top: 0.0,
+                    width: MediaQuery.of(context).size.width,
+                    child: SizedBox(
+                      height: maxHeight,
+                      child: const Panel(),
+                    ),
                   ),
-                ),
-                Positioned(
-                  top: 0.0,
-                  width: MediaQuery.of(context).size.width,
-                  child: ClipRect(
-                    child: SlideTransition(
-                      position: _collapsedOffsetAnimation,
-                      child: SizedBox(
-                        height: minHeight,
-                        child: const Collapsed(),
+                  Positioned(
+                    top: 0.0,
+                    width: MediaQuery.of(context).size.width,
+                    child: ClipRect(
+                      child: SlideTransition(
+                        position: _collapsedOffsetAnimation,
+                        child: SizedBox(
+                          height: minHeight,
+                          child: const Collapsed(),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
+      orElse: () => Container(),
     );
   }
 

@@ -699,6 +699,7 @@ class JellyfinAPI extends ChangeNotifier {
       url: imageUrl,
       file: await _fileImage(imageFilename),
       headers: reqHeaders,
+      processError: (error) => MemoryImage(kTransparentImage),
     );
 
     cachedImages[imageUrl] = image;
@@ -713,7 +714,7 @@ class JellyfinAPI extends ChangeNotifier {
     int maxHeight = 256,
   }) {
     final String url =
-        '$_jellyfinUrl/Items/$itemId/Images/Primary?tag=$primaryImageTag&maxWidth=$maxWidth&maxHeight=$maxHeight';
+        '$_jellyfinUrl/Items/$itemId/Images/Primary?maxWidth=$maxWidth&maxHeight=$maxHeight';
 
     return url;
   }
@@ -736,7 +737,20 @@ class JellyfinAPI extends ChangeNotifier {
       itemId = item.id;
     } else if (item is Song) {
       imageTag = item.albumPrimaryImageTag;
-      itemId = item.id;
+      itemId = item.albumId;
+    } else if (item is MediaItem) {
+      final file = File(item.artUri?.path ?? '');
+      if (file.existsSync()) {
+        return Image.file(file, fit: fit);
+      }
+      if (item.artUri != null) {
+        return FadeInImage(
+          image: NetworkImage(item.artUri!.path),
+          placeholder: MemoryImage(kTransparentImage),
+        );
+      }
+
+      return alternative;
     } else {
       return alternative;
     }
@@ -792,7 +806,7 @@ class JellyfinAPI extends ChangeNotifier {
       itemId = item.id;
     } else if (item is Song) {
       imageTag = item.albumPrimaryImageTag;
-      itemId = item.id;
+      itemId = item.albumId;
     } else {
       return alternative;
     }
