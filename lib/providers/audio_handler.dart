@@ -70,34 +70,6 @@ class JustAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     play();
   }
 
-  Future<void> playExampleSong() async {
-    const exampleSongId = 'b05e92a388f97a7d321b38f92c803f33';
-    final exampleSong = await jellyfinApi.mediaItemFromSongId(exampleSongId);
-
-    if (exampleSong != null) {
-      stop();
-      queue.add([exampleSong]);
-      mediaItem.add(exampleSong);
-    }
-
-    try {
-      concatenatingAudioSource = ConcatenatingAudioSource(
-        useLazyPreparation: true,
-        shuffleOrder: DefaultShuffleOrder(),
-        children: itemsFromQueue,
-      );
-      await _player.setAudioSource(
-        concatenatingAudioSource!,
-        initialIndex: 0,
-        initialPosition: Duration.zero,
-      );
-      play();
-    } catch (e) {
-      // ignore: avoid_print
-      print("Error: $e");
-    }
-  }
-
   Future<void> _init() async {
     _player.playbackEventStream.map(_transformEvent).pipe(playbackState);
 
@@ -163,6 +135,8 @@ class JustAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   @override
   Future<void> play() => _player.play();
 
+  Stream<bool> get playingStream => _player.playingStream;
+
   @override
   Future<void> stop() => _player.stop();
 
@@ -174,6 +148,9 @@ class JustAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 
   @override
   Future<void> skipToNext() => _player.seekToNext();
+
+  @override
+  Future<void> skipToQueueItem(int index) => _player.seek(Duration.zero, index: index);
 
   @override
   Future<void> seek(Duration position) => _player.seek(position);

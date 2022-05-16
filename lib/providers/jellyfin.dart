@@ -710,8 +710,8 @@ class JellyfinAPI extends ChangeNotifier {
   String? _imageTagUrl({
     required String primaryImageTag,
     required String itemId,
-    int maxWidth = 256,
-    int maxHeight = 256,
+    int maxWidth = 1024,
+    int maxHeight = 1024,
   }) {
     final String url =
         '$_jellyfinUrl/Items/$itemId/Images/Primary?maxWidth=$maxWidth&maxHeight=$maxHeight';
@@ -722,8 +722,8 @@ class JellyfinAPI extends ChangeNotifier {
   Widget futureItemImage({
     required dynamic item,
     BoxFit fit = BoxFit.cover,
-    int maxWidth = 256,
-    int maxHeight = 256,
+    int maxWidth = 1024,
+    int maxHeight = 1024,
     Widget alternative = const SizedBox(),
   }) {
     String? imageTag;
@@ -791,8 +791,8 @@ class JellyfinAPI extends ChangeNotifier {
   Future<Widget> itemImage({
     required dynamic item,
     BoxFit fit = BoxFit.cover,
-    int maxWidth = 256,
-    int maxHeight = 256,
+    int maxWidth = 1024,
+    int maxHeight = 1024,
     Widget alternative = const SizedBox(),
   }) async {
     String? imageTag;
