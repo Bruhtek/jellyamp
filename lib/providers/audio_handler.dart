@@ -36,6 +36,25 @@ class JustAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     return playFromSongId(id);
   }
 
+  Future<void> addOrPlayFromAlbumId(String id) async {
+    bool add = false;
+    if (_player.playing && concatenatingAudioSource != null) {
+      add = true;
+    }
+
+    final album = jellyfinApi.getAlbum(id);
+    final songs = album!.songIds;
+
+    for (var id in songs) {
+      if (add) {
+        addFromSongId(id);
+      } else {
+        playFromSongId(id);
+        add = true;
+      }
+    }
+  }
+
   /// assumes that concatenatingAudioSource is not null
   Future<void> addFromSongId(String id) async {
     final item = await jellyfinApi.mediaItemFromSongId(id);
@@ -154,6 +173,17 @@ class JustAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 
   @override
   Future<void> seek(Duration position) => _player.seek(position);
+
+  @override
+  Future<void> removeQueueItemAt(int index) async {
+    final q = queue.value;
+    q.removeAt(index);
+    queue.add(q);
+
+    concatenatingAudioSource!.removeAt(index);
+
+    return;
+  }
 
   Stream<SequenceState?> get sequenceStateStream => _player.sequenceStateStream;
 }

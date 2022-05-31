@@ -156,6 +156,7 @@ class _AlbumInfoState extends ConsumerState<AlbumInfo> {
                     ),
                   )
                 : null,
+            onTap: () => ref.read(justAudioProvider).addOrPlayFromSongId(song.id),
           );
         },
         separatorBuilder: (context, index) => const Divider(),
@@ -171,10 +172,8 @@ class _AlbumInfoState extends ConsumerState<AlbumInfo> {
     return Scaffold(
       body: body(ref, context),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        child: const Icon(Icons.arrow_back),
+        child: const Icon(Icons.play_arrow_rounded),
+        onPressed: () => ref.read(justAudioProvider).addOrPlayFromAlbumId(album.id),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );

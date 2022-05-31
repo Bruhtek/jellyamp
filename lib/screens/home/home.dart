@@ -180,7 +180,8 @@ class HomeScreen extends ConsumerWidget {
                   final Song song = songs[index];
 
                   return gridItem(context, songCover(song, ref, context), song.title,
-                      song.artistNames.join(', '));
+                      song.artistNames.join(', '),
+                      onClick: () => ref.read(justAudioProvider).addOrPlayFromSongId(song.id));
                 },
               ),
             ),

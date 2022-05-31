@@ -35,10 +35,52 @@ class _PanelPlayerState extends ConsumerState<PanelPlayer> {
             const SizedBox(height: 8.0),
             Text(
               track.tag.title,
+              textAlign: TextAlign.center,
               style: TextStyle(fontSize: 24, color: Theme.of(context).colorScheme.primary),
             ),
-            Text(track.tag.artist,
-                style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer)),
+            Text(
+              track.tag.artist,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  onPressed: () => ref.read(justAudioProvider).skipToPrevious(),
+                  icon: const Icon(Icons.skip_previous_rounded),
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  iconSize: 40,
+                ),
+                StreamBuilder<bool>(
+                  stream: ref.watch(justAudioProvider.select((value) => value.playingStream)),
+                  builder: (context, snapshot) {
+                    if (snapshot.data ?? false) {
+                      return IconButton(
+                        onPressed: () => ref.read(justAudioProvider).pause(),
+                        icon: const Icon(Icons.pause_rounded),
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        iconSize: 48,
+                      );
+                    }
+
+                    return IconButton(
+                      onPressed: () => ref.read(justAudioProvider).play(),
+                      icon: const Icon(Icons.play_arrow_rounded),
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      iconSize: 48,
+                    );
+                  },
+                ),
+                IconButton(
+                  onPressed: () => ref.read(justAudioProvider).skipToNext(),
+                  icon: const Icon(Icons.skip_next_rounded),
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  iconSize: 40,
+                ),
+              ],
+            ),
           ],
         );
       },

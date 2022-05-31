@@ -20,9 +20,10 @@ class _CollapsedState extends ConsumerState<Collapsed> {
 
         return Container(
           color: Theme.of(context).colorScheme.surface,
-          padding: EdgeInsets.all(4.0),
+          padding: const EdgeInsets.all(4.0),
           child: Row(
             children: [
+              const SizedBox(width: 4.0),
               AspectRatio(
                 aspectRatio: 1 / 1,
                 child: SizedBox(
@@ -38,17 +39,21 @@ class _CollapsedState extends ConsumerState<Collapsed> {
               const SizedBox(width: 4.0),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       track.tag.title,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontSize: 24, color: Theme.of(context).colorScheme.primary),
                     ),
-                    Text(track.tag.artist,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
-                        )),
+                    Text(
+                      track.tag.artist,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      ),
+                    ),
                   ],
                 ),
               ),
