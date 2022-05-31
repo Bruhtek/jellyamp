@@ -46,24 +46,26 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget placeHolderContainer(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.0),
-        color: Theme.of(context).colorScheme.onSecondary,
-      ),
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.info_outline,
-            color: Colors.blue,
-            size: 100,
-          ),
-          stylishHomeText(context, 'Placeholder'),
-        ],
-      ),
-    );
+    return Container();
+
+    // return Container(
+    //   decoration: BoxDecoration(
+    //     borderRadius: BorderRadius.circular(8.0),
+    //     color: Theme.of(context).colorScheme.onSecondary,
+    //   ),
+    //   padding: const EdgeInsets.all(8.0),
+    //   child: Column(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: [
+    //       const Icon(
+    //         Icons.info_outline,
+    //         color: Colors.blue,
+    //         size: 100,
+    //       ),
+    //       stylishHomeText(context, 'Placeholder'),
+    //     ],
+    //   ),
+    // );
   }
   Widget rediscoverAlbums(BuildContext context, WidgetRef ref, int count) {
     List<Album> albums = ref.read(jellyfinAPIProvider).getRecommendedAlbums();
@@ -91,6 +93,10 @@ class HomeScreen extends ConsumerWidget {
                 scrollDirection: Axis.horizontal,
                 itemCount: count,
                 itemBuilder: (context, index) {
+                  if (index >= albums.length) {
+                    return Container();
+                  }
+
                   final Album album = albums[index];
 
                   return gridItem(
@@ -134,6 +140,10 @@ class HomeScreen extends ConsumerWidget {
                 scrollDirection: Axis.horizontal,
                 itemCount: count,
                 itemBuilder: (context, index) {
+                  if (index >= artists.length) {
+                    return Container();
+                  }
+
                   final Artist artist = artists[index];
 
                   return gridItem(
@@ -177,6 +187,10 @@ class HomeScreen extends ConsumerWidget {
                 scrollDirection: Axis.horizontal,
                 itemCount: count,
                 itemBuilder: (context, index) {
+                  if (index >= songs.length) {
+                    return Container();
+                  }
+
                   final Song song = songs[index];
 
                   return gridItem(context, songCover(song, ref, context), song.title,

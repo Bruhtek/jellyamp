@@ -10,6 +10,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:transparent_image/transparent_image.dart';
 
@@ -585,7 +586,7 @@ class JellyfinAPI extends ChangeNotifier {
 
     albums.shuffle();
 
-    return albums.sublist(0, count);
+    return albums.sublist(0, min(count, albums.length));
   }
   List<Artist> getRandomArtists({int count = 20}) {
     List<Artist> artists = [];
@@ -596,7 +597,7 @@ class JellyfinAPI extends ChangeNotifier {
 
     artists.shuffle();
 
-    return artists.sublist(0, count);
+    return artists.sublist(0, min(count, artists.length));
   }
   List<Song> getRandomSongs({int count = 20}) {
     List<Song> songs = [];
@@ -607,7 +608,7 @@ class JellyfinAPI extends ChangeNotifier {
 
     songs.shuffle();
 
-    return songs.sublist(0, count);
+    return songs.sublist(0, min(count, songs.length));
   }
 
   List<Album> recomendedAlbums = [];
