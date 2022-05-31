@@ -1,77 +1,58 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:just_audio/just_audio.dart';
 
-import 'package:provider/provider.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:just_audio_background/just_audio_background.dart';
+import 'screens/index.dart';
+import 'providers/jellyfin.dart';
+import 'providers/audio_handler.dart';
 
-//theming
-import 'package:dynamic_color/dynamic_color.dart';
-import 'package:material_color_utilities/material_color_utilities.dart';
-import 'package:jellyamp/classes/colorscheme.dart';
-
-// jellyamp packages
-import 'package:jellyamp/screens/root.dart';
-import 'package:jellyamp/audio/just_audio_player.dart';
-import 'package:jellyamp/audio/audio_player_service.dart';
-import 'package:jellyamp/api/jellyfin.dart';
+late JellyfinAPI _jellyfinAPI;
+late ChangeNotifierProvider<JellyfinAPI> jellyfinAPIProvider;
+late JustAudioHandler _justAudioHandler;
+late Provider<JustAudioHandler> justAudioProvider;
+late StreamProvider<SequenceState?> sequenceStateProvider;
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
 
-  await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.bruhtek.jellyamp.channel.audio',
-    androidNotificationChannelName: 'Jellyamp Playback',
-    androidNotificationOngoing: false,
-    androidResumeOnClick: true,
-    androidNotificationClickStartsActivity: true,
-    preloadArtwork: true,
+  await Hive.initFlutter();
+  await Hive.openBox('encrypted');
+  await Hive.openBox<Map<dynamic, dynamic>>('preferences');
+  await Hive.openLazyBox('musicData');
+
+  _jellyfinAPI = JellyfinAPI();
+  jellyfinAPIProvider = ChangeNotifierProvider((ref) => _jellyfinAPI);
+
+  _justAudioHandler = await AudioService.init<JustAudioHandler>(
+    builder: () => JustAudioHandler(_jellyfinAPI),
+    config: const AudioServiceConfig(
+      androidNotificationChannelId: 'com.bruhtek.jellyamp.channel.audio',
+      androidNotificationChannelName: 'Jellyamp playback',
+      androidShowNotificationBadge: true,
+    ),
   );
+  justAudioProvider = Provider((ref) => _justAudioHandler);
+  sequenceStateProvider =
+      StreamProvider<SequenceState?>((ref) => _justAudioHandler.sequenceStateStream);
 
-  runApp(const MainApp());
-}
+  // fed up with secure storage, impossible to develop with
+  // final secureStorage = new FlutterSecureStorage();
+  // WidgetsFlutterBinding.ensureInitialized();
+  // String? encryptionKey = await secureStorage.read(key: 'key');
+  // if (encryptionKey == null) {
+  //   final key = Hive.generateSecureKey();
+  //   await secureStorage.write(
+  //     key: 'key',
+  //     value: base64UrlEncode(key),
+  //   );
+  //   encryptionKey = base64UrlEncode(key);
+  // }
+  // final encryptKey = base64Url.decode(encryptionKey);
+  // await Hive.openBox('encrypted', encryptionCipher: HiveAesCipher(encryptKey));
 
-class MainApp extends StatelessWidget {
-  const MainApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider<PanelController>(
-          create: (_) => PanelController(),
-        ),
-        Provider<AudioPlayerService>(
-          create: (_) => JustAudioPlayer(),
-          dispose: (_, value) => (value as JustAudioPlayer).dispose(),
-        ),
-        Provider<JellyfinAPI>(
-          create: (_) => JellyfinAPI(),
-        ),
-      ],
-      child: DynamicColorBuilder(
-        builder: (CorePalette? corePalette) {
-          ColorScheme scheme;
-
-          if (corePalette != null) {
-            scheme = ColorSchemeGenerator.generate(corePalette, true);
-          } else {
-            scheme = const ColorScheme.dark();
-          }
-          return Provider<ColorScheme>(
-            create: (_) => scheme,
-            child: MaterialApp(
-              title: 'Jellyamp',
-              home: const Root(),
-              darkTheme: ThemeData.from(
-                colorScheme: scheme,
-              ),
-              themeMode: ThemeMode.dark,
-            ),
-          );
-        },
-      ),
-    );
-  }
+  runApp(const ProviderScope(child: IndexScreen()));
 }

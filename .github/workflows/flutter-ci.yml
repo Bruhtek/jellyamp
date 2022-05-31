@@ -8,6 +8,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SIGNING_ALIAS: ${{ secrets.ALIAS }}
+      SIGNING_KEY_PASSWORD: ${{ secrets.KEYPASSWORD }}
+      SIGNING_KEY_STORE_PASSWORD: ${{ secrets.KEYSTOREPASSWORD }}
+      SIGNING_KEY_BASE64: ${{ secrets.SIGNINGKEYBASE64 }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v2
@@ -17,6 +22,14 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '2.10.0'
+      
+      - run: echo "$SIGNING_KEY_BASE64" | base64 -d > $GITHUB_WORKSPACE/signing-key.jks
+     
+      - run: echo "storePassword=$SIGNING_KEY_STORE_PASSWORD" > $GITHUB_WORKSPACE/android/key.properties
+      - run: echo "keyPassword=$SIGNING_KEY_PASSWORD" >> $GITHUB_WORKSPACE/android/key.properties
+      - run: echo "keyAlias=$SIGNING_ALIAS" >> $GITHUB_WORKSPACE/android/key.properties
+      - run: echo "storeFile=$GITHUB_WORKSPACE/signing-key.jks" >> $GITHUB_WORKSPACE/android/key.properties
+      
       - run: flutter pub get
       - run: flutter analyze --no-fatal-infos .
       - run: flutter build apk
